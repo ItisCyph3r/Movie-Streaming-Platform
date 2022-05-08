@@ -1,0 +1,74 @@
+<%- include ('header') %>
+<div class="dash-content">
+    <div class="overview">
+        <div class="title">
+            <span class="text">Trending Movies</span>
+        </div>
+
+        <div class="activity-data">
+            <section class="ftco-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="featured-carousel owl-carousel">
+                                <% for(var element= (movie.length-1); element>=0; element--){ %>
+                                <div class="item">
+                                    <div class="work">
+                                        <div class="img d-flex align-items-end justify-content-center"
+                                            style="background-image: url('<%= movie[element].posterImage %>');">
+                                            <div class="text w-100">
+                                                <!-- <span class="cat">Web Design</span> -->
+                                                <h3><a href="#"><%= movie[element].name %></a></h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>           
+        </div>
+
+        <div class="title"> 
+            <span class="text">Featured</span>
+        </div>
+
+        <div class="activity-data">
+            <div class="video-block section-padding">
+                <div class="row">
+                    <% movie.forEach(element => { %>
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="video-card-image">
+                            <!-- const formattedUrl = element.name.toLowerCase().split(' ').join('%20'); -->
+                            <a href="/featured/<%= element.name %>">
+                                <img class="img-fluid" src=" <%= element.posterImage %>" alt="">
+                            </a>
+                            <div class="time">3:50</div>
+                        </div>
+                        <div class="video-card-body">
+                            <div class="video-title">
+                                <a href="#"><%= element.name %></a>
+                            </div>
+                            <div class="video-page">
+                                <%= element.description.substring(0, 100) + '...' %> <br>
+                                <a href="/featured/<%= element.name %>">Watch Now</a>
+                                <a title="" data-placement="top" data-toggle="tooltip" href="#"
+                                    data-original-title="Verified"><i class="fas fa-check-circle text-success"></i></a>
+                            </div>
+                            <div class="video-view">
+                                1.8M views &nbsp;<i class="fas fa-calendar-alt"></i> 11 Months ago
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+
+
+                </div>
+            </div>
+
+
+        </div>
+        </section>
+        <%- include('footer') %>
