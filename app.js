@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const lodash = require('lodash');
+const session = require('express-session');
+const passport = require('passport');
+const {Google, GitHub, Local} = require(__dirname + '/controllers/user')
 const Movies = require('./controllers/movie');
 const app = express();
 const port = 3000;
@@ -11,7 +13,25 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(express.static('public'));
+app.use(session({
+    secret: 'Our little secret',
+    resave: false,
+    saveUninitialized: false,
+}));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(Local.createStrategy());
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+passport.deserializeUser(function (id, done) {
+    User.findById(id, (err, user) => {
+        done(err, user)
+    })
+});
 
 
 app.get('/', (req, res) => {
@@ -28,6 +48,49 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
 
 })
+
+app
+    .route('/login')
+    .get((req, res) => {
+        res.render('login', {});
+    })
+    .post((req, res) => {
+        const user = new Local({
+            username: req.body.username,
+            password: req.body.passpord
+        })
+
+        req.login(user, function (err) {
+            if (err) {
+                console.log(err)
+            } else {
+                passport.authenticate("local")(req, res, function () {
+                    res.redirect('/secrets')
+                })
+            }
+        })
+    })
+
+app
+    .route('/signup')
+    .get((req, res) => {
+        res.render('signup');
+    })
+    .post((req, res) => {
+        Local.register({
+            username: req.body.username
+        }, req.body.password, function (err, user) {
+            if (err) {
+                console.log(err)
+                res.redirect('/register')
+            } else {
+                passport.authenticate("local")(req, res, function () {
+                    res.redirect('/secrets')
+                })
+            }
+        })
+    })
+
 
 
 app.get("/video", function (req, res) {
