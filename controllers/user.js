@@ -6,6 +6,7 @@ mongoose.connect('mongodb://localhost:27017/MovieDB')
 
 const localUserSchema = new mongoose.Schema({
     username: String,
+    displayname: String,
     password: String,
 })
 
@@ -35,8 +36,7 @@ localUserSchema.plugin(findOrCreate)
 const Google = new mongoose.model('GoogleUser', googleUserSchema)
 const GitHub = new mongoose.model('GitHubUser', githubUserSchema)
 const Local = new mongoose.model('LocalUser', localUserSchema)
-let a = 1
-let b = 2
+
 module.exports = {
-    Google, GitHub, Local, a, b
+    Google, GitHub, Local
 }

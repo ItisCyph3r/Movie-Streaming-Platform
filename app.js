@@ -28,11 +28,14 @@ passport.serializeUser(function (user, done) {
     done(null, user.id);
 });
 passport.deserializeUser(function (id, done) {
-    User.findById(id, (err, user) => {
+    Local.findById(id, (err, user) => {
         done(err, user)
     })
 });
 
+let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
+let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
+let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 
 app.get('/', (req, res) => {
     Movies.find({}, (err, found) => {
@@ -55,17 +58,22 @@ app
         res.render('login', {});
     })
     .post((req, res) => {
+        console.log(req.body.username)
+        console.log(req.body.password)
+
         const user = new Local({
             username: req.body.username,
-            password: req.body.passpord
+            password: req.body.password
         })
+
+        
 
         req.login(user, function (err) {
             if (err) {
                 console.log(err)
             } else {
                 passport.authenticate("local")(req, res, function () {
-                    res.redirect('/secrets')
+                    res.redirect('/')
                 })
             }
         })
@@ -74,21 +82,78 @@ app
 app
     .route('/signup')
     .get((req, res) => {
-        res.render('signup');
+        res.render('signup', {
+            'error': '',
+            'pass_error': '',
+            'usernameErr': ''
+        });
     })
     .post((req, res) => {
-        Local.register({
-            username: req.body.username
-        }, req.body.password, function (err, user) {
-            if (err) {
-                console.log(err)
-                res.redirect('/register')
-            } else {
-                passport.authenticate("local")(req, res, function () {
-                    res.redirect('/secrets')
+        Local.find({
+            username: req.body.email
+        }, (err, docs) => {
+            if (docs.length) {
+                res.render('signup', {
+                    'error': emailErr,
+                    'pass_error': '',
+                    'usernameErr': ''
                 })
+                console.log('user exists')
+            } else {
+                Local.find({
+                    displayname: req.body.displayname
+                }, async (err, docs) => {
+                    if (docs.length) {
+                        res.render('signup', {
+                            'error': '',
+                            'usernameErr': usernameErr,
+                            'pass_error': ''
+                        })
+                        console.log('user exists')
+                    } else {
+                        // await User.register({
+                        //         email: req.body.username,
+                        //         username: req.body.email,
+                        //         raw_password: req.body.password
+                        //     },
+                        //     req.body.password);
+                        // res.redirect('/')
+
+                        Local.register({
+                            username: req.body.username,
+                            displayname: req.body.displayname
+                        }, req.body.password, function (err, user) {
+                            if (err) {
+                                console.log(err)
+                                res.redirect('/signup')
+                            } else {
+                                res.redirect('/login')
+                                // passport.authenticate("local")(req, res, function () {
+                                //     res.redirect('/secrets')
+                                // })
+                            }
+                        })
+                    }
+                });
             }
         })
+
+
+
+        // Local.register({
+        //     username: req.body.username,
+        //     displayName: req.body.displayname
+        // }, req.body.password, function (err, user) {
+        //     if (err) {
+        //         console.log(err)
+        //         res.redirect('/signup')
+        //     } else {
+        //         res.redirect('/login')
+        //         // passport.authenticate("local")(req, res, function () {
+        //         //     res.redirect('/secrets')
+        //         // })
+        //     }
+        // })
     })
 
 
