@@ -11,32 +11,43 @@ const localUserSchema = new mongoose.Schema({
 })
 
 const googleUserSchema = new mongoose.Schema({
+    refreshToken: String,
     username: String,
     googleId: String,
     picture: String
 
 })
 
-const githubUserSchema = new mongoose.Schema({
+const FacebookUserSchema = new mongoose.Schema({
     username: String,
-    githubId: String,
+    facebookId: String,
     picture: String
+})
 
+const InstagramUserSchema = new mongoose.Schema({
+    username: String,
+    facebookId: String,
+    picture: String
 })
 
 googleUserSchema.plugin(passportLocalMongoose);
 googleUserSchema.plugin(findOrCreate)
 
-githubUserSchema.plugin(passportLocalMongoose);
-githubUserSchema.plugin(findOrCreate)
+FacebookUserSchema.plugin(passportLocalMongoose);
+FacebookUserSchema.plugin(findOrCreate)
 
 localUserSchema.plugin(passportLocalMongoose);
 localUserSchema.plugin(findOrCreate)
 
+InstagramUserSchema.plugin(passportLocalMongoose);
+InstagramUserSchema.plugin(findOrCreate)
+
 const Google = new mongoose.model('GoogleUser', googleUserSchema)
-const GitHub = new mongoose.model('GitHubUser', githubUserSchema)
+const Facebook = new mongoose.model('FacebookUser', FacebookUserSchema)
+const Instagram = new mongoose.model('InstagramUser', InstagramUserSchema)
 const Local = new mongoose.model('LocalUser', localUserSchema)
 
+
 module.exports = {
-    Google, GitHub, Local
+    Google, Facebook, Instagram,Local
 }
