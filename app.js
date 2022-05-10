@@ -37,15 +37,22 @@ let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That emai
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 
-app.get('/', (req, res) => {
-    Movies.find({}, (err, found) => {
-        if (err)
-            return console.log(err)
-        else
-            return res.render('index', {
-                movie: found
-            });
-    })
+app.get('/watch', (req, res) => {
+    if (req.isAuthenticated()) {
+        Movies.find({}, (err, found) => {
+            if (err)
+                return console.log(err)
+            else{
+                // console.log(found)
+                res.render('index', {
+                    movie: found
+                });
+            }
+        })
+    }
+    else{
+        res.redirect('/login')
+    }
 })
 
 app.post('/', (req, res) => {
@@ -55,28 +62,29 @@ app.post('/', (req, res) => {
 app
     .route('/login')
     .get((req, res) => {
-        res.render('login', {});
+        res.render('login', {'error': ''});
     })
-    .post((req, res) => {
-        console.log(req.body.username)
-        console.log(req.body.password)
+    .post((req, res, next) => {
+        // console.log(req.body.username)
+        // console.log(req.body.password)
 
-        const user = new Local({
-            username: req.body.username,
-            password: req.body.password
-        })
-
-        
-
-        req.login(user, function (err) {
+        passport.authenticate('local', (err, user, info) => {
             if (err) {
-                console.log(err)
-            } else {
-                passport.authenticate("local")(req, res, function () {
-                    res.redirect('/')
+                return console.log(err)
+            }
+
+            if (!user) {
+                return res.render('login', {
+                    'error': passErrorMsg
                 })
             }
-        })
+            req.login(user, (err) => {
+                if (err) {
+                    return next(err)
+                }
+                return res.redirect('/')
+            })
+        })(req, res, next);
     })
 
 app
@@ -90,7 +98,7 @@ app
     })
     .post((req, res) => {
         Local.find({
-            username: req.body.email
+            username: req.body.username
         }, (err, docs) => {
             if (docs.length) {
                 res.render('signup', {
@@ -111,14 +119,6 @@ app
                         })
                         console.log('user exists')
                     } else {
-                        // await User.register({
-                        //         email: req.body.username,
-                        //         username: req.body.email,
-                        //         raw_password: req.body.password
-                        //     },
-                        //     req.body.password);
-                        // res.redirect('/')
-
                         Local.register({
                             username: req.body.username,
                             displayname: req.body.displayname
@@ -127,33 +127,15 @@ app
                                 console.log(err)
                                 res.redirect('/signup')
                             } else {
-                                res.redirect('/login')
-                                // passport.authenticate("local")(req, res, function () {
-                                //     res.redirect('/secrets')
-                                // })
+                                setTimeout(() => {
+                                    res.redirect('/login')
+                                }, 5000)
                             }
                         })
                     }
                 });
             }
         })
-
-
-
-        // Local.register({
-        //     username: req.body.username,
-        //     displayName: req.body.displayname
-        // }, req.body.password, function (err, user) {
-        //     if (err) {
-        //         console.log(err)
-        //         res.redirect('/signup')
-        //     } else {
-        //         res.redirect('/login')
-        //         // passport.authenticate("local")(req, res, function () {
-        //         //     res.redirect('/secrets')
-        //         // })
-        //     }
-        // })
     })
 
 
@@ -183,19 +165,19 @@ app.get("/video", function (req, res) {
     videoStream.pipe(res);
 });
 
-
-
-
-app.get('/featured/:postId', (req, res) => {
-    // const reqUrl = req.params.postId
-    // console.log(reqUrl.toLowerCase())
+app.get('/watch/featured/:postId', (req, res) => {
     Movies.find({}, (err, found) => {
-        if (err){}
-            // return console.log(err)
+        if (err)
+            return console.log(err)
         else {
+            
             found.forEach(element => {
                 if (req.params.postId === element.name){
-                    res.render('stream', {movie:found})
+                    res.render('stream', {
+                        title: element.name,
+                        description: element.description,
+                        image: element.posterImage
+                    })
                 }
 
             });

@@ -182,7 +182,8 @@
   /*------------------------------------------------------------------
   [  ]*/
   .login-form{
-    background-image: url(/images/rm218-bb-07.jpg);
+    /* background-image: url(/images/rm218-bb-07.jpg); */
+    background-color: #242526;
     background-size: cover;
     background-position: center;
   }
@@ -480,4 +481,13 @@
       visibility: visible;
       opacity: 1;
     }
+  }
+
+  .stream-img{
+    height: 100px;
+    width: 100px;
+
+    object-fit: cover;
+    object-position:50% 50%;
+    border-radius: 50%;
   }

@@ -116,7 +116,7 @@
                     <div class="col-lg-3 col-md-6 col-sm-12">
                         <div class="video-card-image">
                             <!-- const formattedUrl = element.name.toLowerCase().split(' ').join('%20'); -->
-                            <a href="/featured/<%= element.name %>">
+                            <a href="/watch/featured/<%= element.name %>">
                                 <img class="img-fluid" src=" <%= element.posterImage %>" alt="">
                             </a>
                             <div class="time">3:50</div>
@@ -127,7 +127,7 @@
                             </div>
                             <div class="video-page">
                                 <%= element.description.substring(0, 100) + '...' %> <br>
-                                <a href="/featured/<%= element.name %>">Watch Now</a>
+                                <a href="/watch/featured/<%= element.name %>">Watch Now</a>
                                 <a title="" data-placement="top" data-toggle="tooltip" href="#"
                                     data-original-title="Verified"><i class="fas fa-check-circle text-success"></i></a>
                             </div>
