@@ -42,7 +42,6 @@ passport.use(new GoogleStrategy({
     },
     function (accessToken, refreshToken, profile, cb) {
         Google.findOrCreate({
-            accessToken: accessToken,
             googleId: profile.id,
             username: profile.displayName,
             picture: profile._json.picture
@@ -55,13 +54,24 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: "http://localhost:3000/auth/facebook/watch"
+        callbackURL: "http://localhost:3000/auth/facebook/watch",
+        // profileFields: ['id', 'displayName', 'photos', 'email', ]
+        
     },
     function (accessToken, refreshToken, profile, cb) {
         // console.log(profile)
+        let profilePic ='';
+        // profile.photos.map((piclink)=>{
+        //     console.log(piclink.value);
+        //  profilePic = piclink.value;
+
+        // })
+        const picture = `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
+        // console.log(picture)
         Facebook.findOrCreate({
             username: profile.displayName,
-            facebookId: profile.id
+            facebookId: profile.id,
+            // picture: picture
         }, function (err, user) {
             return cb(err, user);
         });
@@ -161,34 +171,9 @@ app
 
 app.get('/watch', (req, res) => {
     if (req.isAuthenticated()) {
-        function searchDB(name, picture) {
 
-        }
-
-        if (req.session.passport.user.userGroup === 'Local') {
-            Local.findById(req.user.id, (err, result) => {
-                // console.log(result);
-                if (err)
-                    return console.log(err)
-                else {
-                    if (result) {
-                        Movies.find({}, (err, found) => {
-                            if (err)
-                                return console.log(err)
-                            else {
-                                // console.log(result.picture)
-                                res.render('index', {
-                                    movie: found,
-                                    username: result.displayname,
-                                    userpicture: '/images/profile.jpg'
-                                });
-                            }
-                        })
-                    }
-                }
-            })
-        } else if (req.session.passport.user.userGroup === 'Google') {
-            Google.findById(req.user.id, (err, result) => {
+        function searchDB(db) {
+            db.findById(req.user.id, (err, result) => {
                 if (err)
                     return console.log(err)
                 else {
@@ -208,47 +193,114 @@ app.get('/watch', (req, res) => {
                     }
                 }
             })
-        } else if (req.session.passport.user.userGroup === 'Facebook') {
-            Facebook.findById(req.user.id, (err, result) => {
-                if (err)
-                    return console.log(err)
-                else {
-                    if (result) {
-                        Movies.find({}, (err, found) => {
-                            if (err)
-                                return console.log(err)
-                            else {
-                                res.render('index', {
-                                    movie: found,
-                                    username: result.username,
-                                    userpicture: '/images/v1.png'
-                                });
-                            }
-                        })
-                    }
-                }
-            })
-        } else if (req.session.passport.user.userGroup === 'Instagram') {
-            Instagram.findById(req.user.id, (err, result) => {
-                if (err)
-                    return console.log(err)
-                else {
-                    if (result) {
-                        Movies.find({}, (err, found) => {
-                            if (err)
-                                return console.log(err)
-                            else {
-                                res.render('index', {
-                                    movie: found,
-                                    username: result.username,
-                                    userpicture: '/images/v1.png'
-                                });
-                            }
-                        })
-                    }
-                }
-            })
         }
+    
+
+        if (req.session.passport.user.userGroup === 'Local') {
+            Local.findById(req.user.id, (err, result) => {
+                // console.log(result);
+                if (err)
+                    return console.log(err)
+                else {
+                    if (result) {
+                        Movies.find({}, (err, found) => {
+                            if (err)
+                                return console.log(err)
+                            else {
+                                // console.log(result.picture)
+                                res.render('index', {
+                                    movie: found,
+                                    username: result.displayname,
+                                    userpicture: '/images/icons8-user-48.pngicons8-user-48.png'
+                                });
+                            }
+                        })
+                    }
+                }
+            })
+        } 
+        
+        else if (req.session.passport.user.userGroup === 'Google') {
+            searchDB(Google)
+        }
+        else if (req.session.passport.user.userGroup === 'Facebook') {
+            // console.log(req.session.passport)
+            searchDB(Facebook)
+        }
+        else if (req.session.passport.user.userGroup === 'Instagram') {
+            searchDB(Instagram)
+        }
+
+
+
+
+
+
+
+
+
+
+        //     Google.findById(req.user.id, (err, result) => {
+        //         if (err)
+        //             return console.log(err)
+        //         else {
+        //             if (result) {
+        //                 Movies.find({}, (err, found) => {
+        //                     if (err)
+        //                         return console.log(err)
+        //                     else {
+        //                         // console.log(result.picture);
+        //                         res.render('index', {
+        //                             movie: found,
+        //                             username: result.username,
+        //                             userpicture: result.picture
+        //                         });
+        //                     }
+        //                 })
+        //             }
+        //         }
+        //     })
+        // } else if (req.session.passport.user.userGroup === 'Facebook') {
+        //     Facebook.findById(req.user.id, (err, result) => {
+        //         if (err)
+        //             return console.log(err)
+        //         else {
+        //             if (result) {
+        //                 Movies.find({}, (err, found) => {
+        //                     if (err)
+        //                         return console.log(err)
+        //                     else {
+        //                         res.render('index', {
+        //                             movie: found,
+        //                             username: result.username,
+        //                             userpicture: result.picture
+        //                         });
+        //                     }
+        //                 })
+        //             }
+        //         }
+        //     })
+        // } else if (req.session.passport.user.userGroup === 'Instagram') {
+        //     Instagram.findById(req.user.id, (err, result) => {
+        //         if (err)
+        //             return console.log(err)
+        //         else {
+        //             if (result) {
+        //                 Movies.find({}, (err, found) => {
+        //                     if (err)
+        //                         return console.log(err)
+        //                     else {
+        //                         res.render('index', {
+        //                             movie: found,
+        //                             username: result.username,
+        //                             userpicture: result.picture
+        //                         });
+        //                     }
+        //                 })
+        //             }
+        //         }
+        //     })
+        // }
     } else {
         res.redirect('/login')
     }
@@ -305,7 +357,7 @@ app.get('/auth/google/watch',
 
 app
     .route('/auth/facebook')
-    .get(passport.authenticate('facebook'));
+    .get(passport.authenticate('facebook', {scope: ['public_profile']}));
 
 app
     .route('/auth/facebook/watch')
@@ -534,6 +586,8 @@ app
             res.redirect('/login')
         }
     })
+
+
 
 app.route('/settings')
     .get((req, res) => {

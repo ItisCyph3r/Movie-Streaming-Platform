@@ -1,4 +1,29 @@
 <%- include ('header') %>
 <%- include('navbar') %>
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
 
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <div class="user-details">
+            <div class="username d-none d-md-block">
+                Hello <%= username %>
+            </div>
+            <img src=<%= userpicture %> alt="">
+
+        </div>
+
+    </div>
+    <div class="dash-content">
+        <div class="overview">
+            <div class="title">
+                <span class="text">Trending Movies</span>
+            </div>
+        </div>
+    </div>
+</section>
 <%- include('footer') %>
