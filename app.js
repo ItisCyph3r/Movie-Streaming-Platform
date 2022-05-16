@@ -12,11 +12,13 @@ const {
     Instagram,
     Local
 } = require(__dirname + '/controllers/user')
-const Movies = require('./controllers/movie');
+const Movies = require(__dirname + '/controllers/movie');
+const Constructor = require(__dirname + '/controllers/pageConstructor');
 require('dotenv').config()
 const app = express();
 const port = 3000;
 const host = '0.0.0.0'
+
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -55,26 +57,37 @@ passport.use(new FacebookStrategy({
         clientID: process.env.FACEBOOK_APP_ID,
         clientSecret: process.env.FACEBOOK_APP_SECRET,
         callbackURL: "http://localhost:3000/auth/facebook/watch",
-        // profileFields: ['id', 'displayName', 'photos', 'email', ]
-        
     },
     function (accessToken, refreshToken, profile, cb) {
-        // console.log(profile)
-        let profilePic ='';
-        // profile.photos.map((piclink)=>{
-        //     console.log(piclink.value);
-        //  profilePic = piclink.value;
-
-        // })
         const picture = `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
-        // console.log(picture)
-        Facebook.findOrCreate({
-            username: profile.displayName,
-            facebookId: profile.id,
-            // picture: picture
-        }, function (err, user) {
-            return cb(err, user);
-        });
+
+        Facebook.find({
+            facebookId: profile.id
+        }, (err, found) => {
+            if (err)
+                return console.log(err)
+
+            else {
+                if (found.length) {
+                    console.log(found)
+                    Facebook.findOrCreate({
+                        username: profile.displayName,
+                        facebookId: profile.id
+                    }, function (err, user) {
+                        return cb(err, user);
+                    })
+                } else {
+                    Facebook.findOrCreate({
+                        username: profile.displayName,
+                        facebookId: profile.id,
+                        picture: picture
+                    }, function (err, user) {
+                        return cb(err, user);
+                    });
+                }
+            }
+            return console.log('Successful')
+        })
     }
 ));
 
@@ -167,34 +180,13 @@ app
     .get((req, res) => {
         res.send('<a href="/login"> Login </a>')
     })
+    .post((req, res) => {
+
+    })
 
 
 app.get('/watch', (req, res) => {
     if (req.isAuthenticated()) {
-
-        function searchDB(db) {
-            db.findById(req.user.id, (err, result) => {
-                if (err)
-                    return console.log(err)
-                else {
-                    if (result) {
-                        Movies.find({}, (err, found) => {
-                            if (err)
-                                return console.log(err)
-                            else {
-                                // console.log(result.picture);
-                                res.render('index', {
-                                    movie: found,
-                                    username: result.username,
-                                    userpicture: result.picture
-                                });
-                            }
-                        })
-                    }
-                }
-            })
-        }
-    
 
         if (req.session.passport.user.userGroup === 'Local') {
             Local.findById(req.user.id, (err, result) => {
@@ -211,104 +203,26 @@ app.get('/watch', (req, res) => {
                                 res.render('index', {
                                     movie: found,
                                     username: result.displayname,
-                                    userpicture: '/images/icons8-user-48.pngicons8-user-48.png'
+                                    userpicture: '/images/icons8-user-48.png'
                                 });
                             }
                         })
                     }
                 }
             })
-        } 
-        
-        else if (req.session.passport.user.userGroup === 'Google') {
-            searchDB(Google)
+        } else if (req.session.passport.user.userGroup === 'Google') {
+            Constructor.searchDB(Google, req, res)
+        } else if (req.session.passport.user.userGroup === 'Facebook') {
+            Constructor.searchDB(Facebook, req, res)
         }
-        else if (req.session.passport.user.userGroup === 'Facebook') {
-            // console.log(req.session.passport)
-            searchDB(Facebook)
-        }
-        else if (req.session.passport.user.userGroup === 'Instagram') {
-            searchDB(Instagram)
-        }
-
-
-
-
-
-
-
-
-
-
-        //     Google.findById(req.user.id, (err, result) => {
-        //         if (err)
-        //             return console.log(err)
-        //         else {
-        //             if (result) {
-        //                 Movies.find({}, (err, found) => {
-        //                     if (err)
-        //                         return console.log(err)
-        //                     else {
-        //                         // console.log(result.picture);
-        //                         res.render('index', {
-        //                             movie: found,
-        //                             username: result.username,
-        //                             userpicture: result.picture
-        //                         });
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     })
-        // } else if (req.session.passport.user.userGroup === 'Facebook') {
-        //     Facebook.findById(req.user.id, (err, result) => {
-        //         if (err)
-        //             return console.log(err)
-        //         else {
-        //             if (result) {
-        //                 Movies.find({}, (err, found) => {
-        //                     if (err)
-        //                         return console.log(err)
-        //                     else {
-        //                         res.render('index', {
-        //                             movie: found,
-        //                             username: result.username,
-        //                             userpicture: result.picture
-        //                         });
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     })
-        // } else if (req.session.passport.user.userGroup === 'Instagram') {
-        //     Instagram.findById(req.user.id, (err, result) => {
-        //         if (err)
-        //             return console.log(err)
-        //         else {
-        //             if (result) {
-        //                 Movies.find({}, (err, found) => {
-        //                     if (err)
-        //                         return console.log(err)
-        //                     else {
-        //                         res.render('index', {
-        //                             movie: found,
-        //                             username: result.username,
-        //                             userpicture: result.picture
-        //                         });
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     })
+        // else if (req.session.passport.user.userGroup === 'Instagram') {
+        //     searchDB(Instagram, req, res)
         // }
     } else {
         res.redirect('/login')
     }
 })
 
-app.post('/', (req, res) => {
-
-})
 
 app
     .route('/login')
@@ -357,7 +271,9 @@ app.get('/auth/google/watch',
 
 app
     .route('/auth/facebook')
-    .get(passport.authenticate('facebook', {scope: ['public_profile']}));
+    .get(passport.authenticate('facebook', {
+        scope: ['public_profile']
+    }));
 
 app
     .route('/auth/facebook/watch')
@@ -465,94 +381,7 @@ app
     .route('/watch/featured/:postId')
     .get((req, res) => {
         if (req.isAuthenticated()) {
-            if (req.session.passport.user.userGroup === 'Google') {
-                Google.findById(req.user.id, (err, result) => {
-                    // console.log(result);
-                    if (err)
-                        return console.log(err)
-                    else {
-                        if (result) {
-                            Movies.find({}, (err, found) => {
-                                if (err)
-                                    return console.log(err)
-                                else {
-
-                                    found.forEach(element => {
-                                        if (req.params.postId === element.name) {
-                                            console.log(result.picture)
-                                            res.render('stream', {
-                                                username: result.username,
-                                                userpicture: result.picture,
-                                                title: element.name,
-                                                description: element.description,
-                                                image: element.posterImage
-                                            })
-                                        }
-                                    });
-                                }
-                            })
-
-                        }
-                    }
-                })
-            } else if (req.session.passport.user.userGroup === 'Facebook') {
-                Facebook.findById(req.user.id, (err, result) => {
-                    if (err)
-                        return console.log(err)
-                    else {
-                        if (result) {
-                            Movies.find({}, (err, found) => {
-                                if (err)
-                                    return console.log(err)
-                                else {
-
-                                    found.forEach(element => {
-                                        if (req.params.postId === element.name) {
-                                            res.render('stream', {
-                                                username: result.displayname,
-                                                userpicture: '/images/profile.jpg',
-                                                title: element.name,
-                                                description: element.description,
-                                                image: element.posterImage
-                                            })
-                                        }
-                                    });
-                                }
-                            })
-
-                        }
-                    }
-                })
-            } else if (req.session.passport.user.userGroup === 'Instagram') {
-                Instagram.findById(req.user.id, (err, result) => {
-                    // console.log(result);
-                    if (err)
-                        return console.log(err)
-                    else {
-                        if (result) {
-                            Movies.find({}, (err, found) => {
-                                if (err)
-                                    return console.log(err)
-                                else {
-
-                                    found.forEach(element => {
-                                        if (req.params.postId === element.name) {
-                                            res.render('stream', {
-                                                username: result.displayname,
-                                                userpicture: result.picture,
-                                                title: element.name,
-                                                description: element.description,
-                                                image: element.posterImage
-                                            })
-                                        }
-                                    });
-                                }
-                            })
-
-                        }
-                    }
-                })
-            } else {
+            if (req.session.passport.user.userGroup === 'Local') {
                 Local.findById(req.user.id, (err, result) => {
                     // console.log(result);
                     if (err)
@@ -568,7 +397,7 @@ app
                                         if (req.params.postId === element.name) {
                                             res.render('stream', {
                                                 username: result.displayname,
-                                                userpicture: '/images/profile.jpg',
+                                                userpicture: '/images/icons8-user-48.png',
                                                 title: element.name,
                                                 description: element.description,
                                                 image: element.posterImage
@@ -581,6 +410,10 @@ app
                         }
                     }
                 })
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBStream(Google, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBStream(Facebook, req, res)
             }
         } else {
             res.redirect('/login')
@@ -591,7 +424,26 @@ app
 
 app.route('/settings')
     .get((req, res) => {
-        res.render('settings')
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Local') {
+                Local.findById(req.user.id, (err, result) => {
+                    if (err)
+                        return console.log(err)
+                    else {
+                        res.render('settings', {
+                            username: result.displayname,
+                            userpicture: '/images/icons8-user-48.png'
+                        })
+                    }
+                })
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBSettings(Google, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBSettings(Facebook, req, res)
+            }
+        } else {
+            res.redirect('/login')
+        }
     })
 
 app

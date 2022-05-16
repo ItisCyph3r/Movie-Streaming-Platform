@@ -573,8 +573,8 @@ iframe {
 }
 
 .stream-img {
-  height: 120px;
-  width: 120px;
+  height: 100px;
+  width: 100px;
 
   object-fit: cover;
   object-position: 50% 50%;
