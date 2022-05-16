@@ -49,5 +49,5 @@ const Local = new mongoose.model('LocalUser', localUserSchema)
 
 
 module.exports = {
-    Google, Facebook, Instagram,Local
+    Google, Facebook, Instagram, Local
 }

@@ -12,9 +12,10 @@
 
         <div class="user-details">
             <div class="username d-none d-md-block">
-                Hello User
+                Hello <%= username %> 
             </div>
-            <img src="/images/profile.jpg" alt="">
+            <img src=<%= userpicture %> alt="">
+            
         </div>
 
     </div>
@@ -24,15 +25,14 @@
     </video>
 
 
-    <div class="stream d-flex">
-        <div class="mt-3 stream-img-hoslder">
+    <div class="stream">
+        <div class="mt-3 stream-img-holder">
             <img src="<%= image %>" class="stream-img">
         </div>
-        <div class="ms-3">
-            <h3 class="mt-3 fw-bold"> <%= title %> </h3>
-        <h5 class="mt-3"> <%= description %> </h5>
+        <div class="ms-md-3 ms-0">
+            <h1 class="mt-3 fw-bold"> <%= title %> </h4>
+            <h6 class="mt-3"> <%= description %> </h6>
         </div>
-        
     </div>
         
     

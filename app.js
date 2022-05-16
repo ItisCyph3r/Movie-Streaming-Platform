@@ -16,6 +16,7 @@ const Movies = require('./controllers/movie');
 require('dotenv').config()
 const app = express();
 const port = 3000;
+const host = '0.0.0.0'
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -151,6 +152,13 @@ let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That emai
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 
+app
+    .route('/')
+    .get((req, res) => {
+        res.send('<a href="/login"> Login </a>')
+    })
+
+
 app.get('/watch', (req, res) => {
     if (req.isAuthenticated()) {
         function searchDB(name, picture) {
@@ -189,10 +197,11 @@ app.get('/watch', (req, res) => {
                             if (err)
                                 return console.log(err)
                             else {
+                                // console.log(result.picture);
                                 res.render('index', {
                                     movie: found,
                                     username: result.username,
-                                    userpicture: 'https://lh3.googleusercontent.com/a-/AOh14Gg1PIRRaRZRDoy3MHXoURDJIim5kZxuvGD3AFYClQ=s96-c'
+                                    userpicture: result.picture
                                 });
                             }
                         })
@@ -315,12 +324,12 @@ app
 app
     .route('/auth/instagram/watch')
     .get(passport.authenticate('instagram', {
-        failureRedirect: '/login'
-    }),
-    function (req, res) {
-        // Successful authentication, redirect home.
-        res.redirect('/watch');
-    });
+            failureRedirect: '/login'
+        }),
+        function (req, res) {
+            // Successful authentication, redirect home.
+            res.redirect('/watch');
+        });
 
 app
     .route('/signup')
@@ -400,28 +409,136 @@ app.get("/video", function (req, res) {
     videoStream.pipe(res);
 });
 
-app.get('/watch/featured/:postId', (req, res) => {
+app
+    .route('/watch/featured/:postId')
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Google') {
+                Google.findById(req.user.id, (err, result) => {
+                    // console.log(result);
+                    if (err)
+                        return console.log(err)
+                    else {
+                        if (result) {
+                            Movies.find({}, (err, found) => {
+                                if (err)
+                                    return console.log(err)
+                                else {
 
+                                    found.forEach(element => {
+                                        if (req.params.postId === element.name) {
+                                            console.log(result.picture)
+                                            res.render('stream', {
+                                                username: result.username,
+                                                userpicture: result.picture,
+                                                title: element.name,
+                                                description: element.description,
+                                                image: element.posterImage
+                                            })
+                                        }
+                                    });
+                                }
+                            })
 
+                        }
+                    }
+                })
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Facebook.findById(req.user.id, (err, result) => {
+                    if (err)
+                        return console.log(err)
+                    else {
+                        if (result) {
+                            Movies.find({}, (err, found) => {
+                                if (err)
+                                    return console.log(err)
+                                else {
 
-    Movies.find({}, (err, found) => {
-        if (err)
-            return console.log(err)
-        else {
+                                    found.forEach(element => {
+                                        if (req.params.postId === element.name) {
+                                            res.render('stream', {
+                                                username: result.displayname,
+                                                userpicture: '/images/profile.jpg',
+                                                title: element.name,
+                                                description: element.description,
+                                                image: element.posterImage
+                                            })
+                                        }
+                                    });
+                                }
+                            })
 
-            found.forEach(element => {
-                if (req.params.postId === element.name) {
-                    res.render('stream', {
-                        title: element.name,
-                        description: element.description,
-                        image: element.posterImage
-                    })
-                }
+                        }
+                    }
+                })
+            } else if (req.session.passport.user.userGroup === 'Instagram') {
+                Instagram.findById(req.user.id, (err, result) => {
+                    // console.log(result);
+                    if (err)
+                        return console.log(err)
+                    else {
+                        if (result) {
+                            Movies.find({}, (err, found) => {
+                                if (err)
+                                    return console.log(err)
+                                else {
 
-            });
+                                    found.forEach(element => {
+                                        if (req.params.postId === element.name) {
+                                            res.render('stream', {
+                                                username: result.displayname,
+                                                userpicture: result.picture,
+                                                title: element.name,
+                                                description: element.description,
+                                                image: element.posterImage
+                                            })
+                                        }
+                                    });
+                                }
+                            })
+
+                        }
+                    }
+                })
+            } else {
+                Local.findById(req.user.id, (err, result) => {
+                    // console.log(result);
+                    if (err)
+                        return console.log(err)
+                    else {
+                        if (result) {
+                            Movies.find({}, (err, found) => {
+                                if (err)
+                                    return console.log(err)
+                                else {
+
+                                    found.forEach(element => {
+                                        if (req.params.postId === element.name) {
+                                            res.render('stream', {
+                                                username: result.displayname,
+                                                userpicture: '/images/profile.jpg',
+                                                title: element.name,
+                                                description: element.description,
+                                                image: element.posterImage
+                                            })
+                                        }
+                                    });
+                                }
+                            })
+
+                        }
+                    }
+                })
+            }
+        } else {
+            res.redirect('/login')
         }
     })
-})
+
+app.route('/settings')
+    .get((req, res) => {
+        res.render('settings')
+    })
 
 app
     .route('/logout')
@@ -434,6 +551,6 @@ app
 
     })
 
-app.listen(process.env.YOUR_PORT || process.env.PORT || port, () => {
+app.listen(process.env.YOUR_PORT || process.env.PORT || port, host, () => {
     console.log('Listening to server on port ' + port)
 })

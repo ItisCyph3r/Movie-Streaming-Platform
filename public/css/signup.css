@@ -1,8 +1,4 @@
 * {
-  outline: 0px solid red;
-}
-
-* {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
@@ -577,10 +573,10 @@ iframe {
 }
 
 .stream-img {
-  height: 100px;
-  width: 100px;
+  height: 120px;
+  width: 120px;
 
   object-fit: cover;
   object-position: 50% 50%;
-  border-radius: 50%;
+  border-radius: 20px;
 }

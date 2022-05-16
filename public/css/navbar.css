@@ -654,7 +654,7 @@ nav.close~.dashboard .top {
 }
 
 .video-title a {
-    color: #fff;
+    color: var(--text-color);;
     font-weight: 600;
     font-size: 1.15rem;
     text-decoration: none;
@@ -665,6 +665,10 @@ nav.close~.dashboard .top {
 }
 
 .video-page {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+.video-page a{
     font-size: 0.85rem;
     color: var(--text-color);
 }
@@ -721,13 +725,17 @@ nav.close~.dashboard .top {
 .video-card-list:hover .video-card-body .right-action {
     opacity: unset;
 }
-
 #videoPlayer{
-    width:100%;
+    margin-top: 70px !important;
+    object-fit:initial;
+    width: 100%;
+    height: 40vh;
 }
 
 
+.stream{
 
+}
 
 
 
