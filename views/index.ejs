@@ -15,7 +15,7 @@
             <div class="username d-none d-md-block">
                 Hello <%= username %> 
             </div>
-            <img src="<%= userpicture %>" alt="">
+            <img src= <%= userpicture %> alt="">
             
         </div>
 
@@ -74,7 +74,7 @@
                             </div>
                             <div class="video-page">
                                 <%= element.description.substring(0, 100) + '...' %> <br>
-                                <a href="/watch/featured/<%= element.name %>">Watch Now</a>
+                                <a href="/watch/featured/<%= element.name %>" style="color: red;">Watch Now</a>
                                 <a title="" data-placement="top" data-toggle="tooltip" href="#"
                                     data-original-title="Verified"><i class="fas fa-check-circle text-success"></i></a>
                             </div>

@@ -46,7 +46,6 @@ module.exports.passport = () => {
 
                 else {
                     if (found.length) {
-                        console.log(found)
                         Facebook.findOrCreate({
                             username: profile.displayName,
                             facebookId: profile.id
@@ -147,7 +146,5 @@ module.exports.passport = () => {
         }
     });
     
-    let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
-    let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
-    let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
+    
 }
