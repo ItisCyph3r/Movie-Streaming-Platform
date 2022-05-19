@@ -87,6 +87,8 @@ app.get('/watch', (req, res) => {
 let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
+let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!! Please try again after sometime.'
+let successMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Your password has been changed successfully.'
 app
     .route('/login')
     .get((req, res) => {
@@ -313,7 +315,10 @@ app.route('/settings')
                     else {
                         res.render('settings', {
                             username: result.displayname,
-                            userpicture: '/images/icons8-user-48.png'
+                            userpicture: '/images/icons8-user-48.png',
+                            error: '',
+                            timeout: '',
+                            success: ''
                         })
                     }
                 })
@@ -340,22 +345,78 @@ app.route('/settings')
                             user.changePassword(req.body.password, req.body.newpassword, function (err) {
                                 if (err) {
                                     if (err.name === 'IncorrectPasswordError') {
-                                        res.json({
-                                            success: false,
-                                            message: 'Incorrect password'
-                                        }); // Return error
-                                    } else {
-                                        res.json({
-                                            success: false,
-                                            message: 'Something went wrong!! Please try again after sometimes.'
-                                        });
-                                    }
+                                        // res.json({
+                                        //     success: false,
+                                        //     message: 'Incorrect password'
+                                        // }); // Return error
+                                        
+
+                                        Local.findById(req.user.id, (err, result) => {
+                                            if (err)
+                                                return console.log(err)
+                                            else {
+                                                res.render('settings', {
+                                                username: result.displayname,
+                                                userpicture: '/images/icons8-user-48.png',
+                                                error: passErrorMsg,
+                                                timeout: '',
+                                                success: ''
+                                            })
+                                        }})}
+                                    else {
+                                        // res.json({
+                                        //     success: false,
+                                        //     message: 'Something went wrong!! Please try again after sometimes.'
+                                        // });
+                                        Local.findById(req.user.id, (err, result) => {
+                                            if (err)
+                                                return console.log(err)
+                                            else {
+                                                res.render('settings', {
+                                                username: result.displayname,
+                                                userpicture: '/images/icons8-user-48.png',
+                                                timeout: timeOutMsg,
+                                                error: '',
+                                                // timeout: '',
+                                                success: ''
+                                            })
+                                        }})}
+                                        // res.render('settings', {
+                                        //     // username: result.displayname,
+                                        //     userpicture: '/images/icons8-user-48.png',
+                                        //     // error: '',
+                                        //     timeout: timeOutMsg
+                                        // })
+                                        
+                                    
                                 } else {
-                                    res.json({
-                                        success: true,
-                                        message: 'Your password has been changed successfully'
-                                    });
-                                }
+                                    // res.json({
+                                    //     success: true,
+                                    //     message: 'Your password has been changed successfully'
+                                    // });
+                                    Local.findById(req.user.id, (err, result) => {
+                                        if (err)
+                                            return console.log(err)
+                                        else {
+                                            res.render('settings', {
+                                            username: result.displayname,
+                                            userpicture: '/images/icons8-user-48.png',
+                                            timeout: timeOutMsg,
+                                            error: '',
+                                                timeout: '',
+                                                success: successMsg
+                                        // timeout: '',
+                                        // successMsg: ''
+                                        })
+                                    }})}
+                                    // res.render('settings', {
+                                    //     // username: result.displayname,
+                                    //     userpicture: '/images/icons8-user-48.png',
+                                    //     // error: passErrorMsg,
+                                    //     // timeout: '',
+                                    //     success: successMsg
+                                    // })
+                                
                             })
                         }
                     }
