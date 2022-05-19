@@ -1,37 +1,43 @@
 const body = document.querySelector("body"),
-      modeToggle = body.querySelector(".mode-toggle");
-      sidebar = body.querySelector("nav");
-      sidebarToggle = body.querySelector(".sidebar-toggle");
+    modeToggle = body.querySelector(".mode-toggle");
+sidebar = body.querySelector("nav");
+sidebarToggle = body.querySelector(".sidebar-toggle");
 
 let getMode = localStorage.getItem("mode");
-if(getMode && getMode ==="dark"){
+if (getMode && getMode === "dark") {
     body.classList.toggle("dark");
 }
 
 let getStatus = localStorage.getItem("status");
-if(getStatus && getStatus ==="close"){
+if (getStatus && getStatus === "close") {
     sidebar.classList.toggle("close");
 }
 
-modeToggle.addEventListener("click", () =>{
+modeToggle.addEventListener("click", () => {
     body.classList.toggle("dark");
-    if(body.classList.contains("dark")){
+    if (body.classList.contains("dark")) {
         localStorage.setItem("mode", "dark");
-    }else{
+    } else {
         localStorage.setItem("mode", "light");
     }
 });
 
 sidebarToggle.addEventListener("click", () => {
     sidebar.classList.toggle("close");
-    if(sidebar.classList.contains("close")){
+    if (sidebar.classList.contains("close")) {
         localStorage.setItem("status", "close");
-    }else{
+    } else {
         localStorage.setItem("status", "open");
     }
 })
 
+$(".toggle-password").click(function () {
 
-
-
-
+    $(this).toggleClass("fa-eye fa-eye-slash");
+    var input = $($(this).attr("toggle"));
+    if (input.attr("type") == "password") {
+        input.attr("type", "text");
+    } else {
+        input.attr("type", "password");
+    }
+});

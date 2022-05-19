@@ -88,7 +88,7 @@ let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That emai
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!! Please try again after sometime.'
-let successMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Your password has been changed successfully.'
+let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
 app
     .route('/login')
     .get((req, res) => {
@@ -335,92 +335,43 @@ app.route('/settings')
     })
     .post((req, res) => {
             if (req.isAuthenticated()) {
-                Local.findOne({_id: req.user.id}, (err, user) => {
-                    // Check if error connecting
-                    if (err) {res.json({success: false, message: err}); // Return error
-                    } else {
-                        // Check if user was found in database
-                        if (!user) {res.json({success: false, message: 'User not found'});} // Return error, user was not found in db
-                        else {
-                            user.changePassword(req.body.password, req.body.newpassword, function (err) {
-                                if (err) {
-                                    if (err.name === 'IncorrectPasswordError') {
-                                        // res.json({
-                                        //     success: false,
-                                        //     message: 'Incorrect password'
-                                        // }); // Return error
-                                        
+                if (req.session.passport.user.userGroup === 'Local') {
+                    Local.findOne({_id: req.user.id}, (err, user) => {
 
-                                        Local.findById(req.user.id, (err, result) => {
-                                            if (err)
-                                                return console.log(err)
-                                            else {
-                                                res.render('settings', {
-                                                username: result.displayname,
-                                                userpicture: '/images/icons8-user-48.png',
-                                                error: passErrorMsg,
-                                                timeout: '',
-                                                success: ''
-                                            })
-                                        }})}
-                                    else {
-                                        // res.json({
-                                        //     success: false,
-                                        //     message: 'Something went wrong!! Please try again after sometimes.'
-                                        // });
-                                        Local.findById(req.user.id, (err, result) => {
-                                            if (err)
-                                                return console.log(err)
-                                            else {
-                                                res.render('settings', {
-                                                username: result.displayname,
-                                                userpicture: '/images/icons8-user-48.png',
-                                                timeout: timeOutMsg,
-                                                error: '',
-                                                // timeout: '',
-                                                success: ''
-                                            })
-                                        }})}
-                                        // res.render('settings', {
-                                        //     // username: result.displayname,
-                                        //     userpicture: '/images/icons8-user-48.png',
-                                        //     // error: '',
-                                        //     timeout: timeOutMsg
-                                        // })
+                        // Check if error connecting
+                        if (err) {res.json({success: false, message: err});} // Return error
+                        
+                        else {
+                            // Check if user was found in database
+                            if (!user) {res.json({success: false, message: 'User not found'});} // Return error, user was not found in db
+                            else {
+                                user.changePassword(req.body.password, req.body.newpassword, function (err) {
+                                    if (err) {
+                                        if (err.name === 'IncorrectPasswordError') {
+                                            Constructor.searchDBSettings(Local, req, res, passErrorMsg, '', '')
+                                        }
                                         
-                                    
-                                } else {
-                                    // res.json({
-                                    //     success: true,
-                                    //     message: 'Your password has been changed successfully'
-                                    // });
-                                    Local.findById(req.user.id, (err, result) => {
-                                        if (err)
-                                            return console.log(err)
                                         else {
-                                            res.render('settings', {
-                                            username: result.displayname,
-                                            userpicture: '/images/icons8-user-48.png',
-                                            timeout: timeOutMsg,
-                                            error: '',
-                                                timeout: '',
-                                                success: successMsg
-                                        // timeout: '',
-                                        // successMsg: ''
-                                        })
-                                    }})}
-                                    // res.render('settings', {
-                                    //     // username: result.displayname,
-                                    //     userpicture: '/images/icons8-user-48.png',
-                                    //     // error: passErrorMsg,
-                                    //     // timeout: '',
-                                    //     success: successMsg
-                                    // })
-                                
-                            })
+                                            Constructor.searchDBSettings(Local, req, res, '', timeOutMsg, '')
+                                        }
+                                    } else {
+                                        Constructor.searchDBSettings(Local, req, res, '', '', successMsg)
+                                    }                              
+                                })
+                            }
                         }
-                    }
-                })
+                    })
+                }
+                else if (req.session.passport.user.userGroup === 'Google'){
+                    Constructor.searchDBSettings(Google, req, res, '', timeOutMsg, '')
+                }
+                else if (req.session.passport.user.userGroup === 'Facebook'){
+                    Constructor.searchDBSettings(Facebook, req, res, '', timeOutMsg, '')
+                }
+                else if (req.session.passport.user.userGroup === 'Instagram'){
+                    Constructor.searchDBSettings(Instagram, req, res, '', timeOutMsg, '')
+                }
+                
                 console.log(req.body.password); console.log(req.body.newpassword); console.log(req.body.repassword);
             }
             else{
