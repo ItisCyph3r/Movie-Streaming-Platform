@@ -3,15 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
-// const FacebookStrategy = require('passport-facebook').Strategy;
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
-// const InstagramStrategy = require('passport-instagram').Strategy;
-const {
-    Google,
-    Facebook,
-    Instagram,
-    Local
-} = require(__dirname + '/controllers/user')
+const {Google, Facebook, Instagram, Local} = require(__dirname + '/controllers/user')
 const Movies = require(__dirname + '/controllers/movie');
 const Constructor = require(__dirname + '/controllers/pageConstructor');
 const Strategies = require(__dirname + '/controllers/strategies');
@@ -20,6 +12,11 @@ const app = express();
 const port = 3000;
 const host = '0.0.0.0'
 
+let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
+let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
+let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
+let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!!! Please try again after sometime.'
+let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -84,11 +81,6 @@ app.get('/watch', (req, res) => {
     }
 })
 
-let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
-let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
-let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
-let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!! Please try again after sometime.'
-let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
 app
     .route('/login')
     .get((req, res) => {

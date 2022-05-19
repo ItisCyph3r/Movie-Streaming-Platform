@@ -535,7 +535,7 @@ nav.close~.dashboard .top {
     }
 } */
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     .dash-content .boxes .box {
         width: 100%;
     }
