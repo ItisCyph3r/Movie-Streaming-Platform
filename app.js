@@ -3,7 +3,12 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
-const {Google, Facebook, Instagram, Local} = require(__dirname + '/controllers/user')
+const {
+    Google,
+    Facebook,
+    Instagram,
+    Local
+} = require(__dirname + '/controllers/user')
 const Movies = require(__dirname + '/controllers/movie');
 const Constructor = require(__dirname + '/controllers/pageConstructor');
 const Strategies = require(__dirname + '/controllers/strategies');
@@ -46,35 +51,14 @@ app
 
 app.get('/watch', (req, res) => {
     if (req.isAuthenticated()) {
-
         if (req.session.passport.user.userGroup === 'Local') {
-            Local.findById(req.user.id, (err, result) => {
-                // console.log(result);
-                if (err)
-                    return console.log(err)
-                else {
-                    if (result) {
-                        Movies.find({}, (err, found) => {
-                            if (err)
-                                return console.log(err)
-                            else {
-                                // console.log(result.picture)
-                                res.render('index', {
-                                    movie: found,
-                                    username: result.displayname,
-                                    userpicture: '/images/icons8-user-48.png'
-                                });
-                            }
-                        })
-                    }
-                }
-            })
+            Constructor.searchDB(Local, req, res)
         } else if (req.session.passport.user.userGroup === 'Google') {
             Constructor.searchDB(Google, req, res)
         } else if (req.session.passport.user.userGroup === 'Facebook') {
             Constructor.searchDB(Facebook, req, res)
         } else if (req.session.passport.user.userGroup === 'Instagram') {
-            searchDB(Instagram, req, res)
+            Constructor.searchDB(Instagram, req, res)
         }
     } else {
         res.redirect('/login')
@@ -210,41 +194,35 @@ app.get("/video/:videoid", function (req, res) {
     if (!range) {
         res.status(400).send("Requires Range header");
     }
-    // console.log(req.params.videoid)
-    // 
     Movies.find({
         name: req.params.videoid
     }, (err, found) => {
         if (err)
             return console.log(err)
-        else {
-            found.forEach(element => {
-                // console.log(req.params.videoid)
-                // console.log(element.name);
-                if (req.params.videoid === element.name) {
-                    const videoPath = __dirname + '/samples/' + element.name + '.mp4';
-                    const videoSize = fs.statSync(__dirname + '/samples/' + element.name + '.mp4').size;
-                    const CHUNK_SIZE = 10 ** 6;
-                    const start = Number(range.replace(/\D/g, ""));
-                    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-                    const contentLength = end - start + 1;
-                    const headers = {
-                        "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-                        "Accept-Ranges": "bytes",
-                        "Content-Length": contentLength,
-                        "Content-Type": "video/mp4",
-                    };
-                    res.writeHead(206, headers);
-                    const videoStream = fs.createReadStream(videoPath, {
-                        start,
-                        end
-                    });
-                    videoStream.pipe(res);
-                } else {
-                    res.redirect('/watch');
-                }
-            })
-        }
+        else return found.forEach(element => {
+            if (req.params.videoid === element.name) {
+                const videoPath = __dirname + '/samples/' + element.name + '.mp4';
+                const videoSize = fs.statSync(__dirname + '/samples/' + element.name + '.mp4').size;
+                const CHUNK_SIZE = 10 ** 6;
+                const start = Number(range.replace(/\D/g, ""));
+                const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+                const contentLength = end - start + 1;
+                const headers = {
+                    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+                    "Accept-Ranges": "bytes",
+                    "Content-Length": contentLength,
+                    "Content-Type": "video/mp4",
+                };
+                res.writeHead(206, headers);
+                const videoStream = fs.createReadStream(videoPath, {
+                    start,
+                    end
+                });
+                videoStream.pipe(res);
+            } else {
+                res.redirect('/watch');
+            }
+        })
     })
 })
 
@@ -255,34 +233,7 @@ app
     .get((req, res) => {
         if (req.isAuthenticated()) {
             if (req.session.passport.user.userGroup === 'Local') {
-                Local.findById(req.user.id, (err, result) => {
-                    // console.log(result);
-                    if (err)
-                        return console.log(err)
-                    else {
-                        if (result) {
-                            Movies.find({}, (err, found) => {
-                                if (err)
-                                    return console.log(err)
-                                else {
-
-                                    found.forEach(element => {
-                                        if (req.params.postId === element.name) {
-                                            res.render('stream', {
-                                                username: result.displayname,
-                                                userpicture: '/images/icons8-user-48.png',
-                                                title: element.name,
-                                                description: element.description,
-                                                image: element.posterImage
-                                            })
-                                        }
-                                    });
-                                }
-                            })
-
-                        }
-                    }
-                })
+                Constructor.searchDBStream(Local, req, res)
             } else if (req.session.passport.user.userGroup === 'Google') {
                 Constructor.searchDBStream(Google, req, res)
             } else if (req.session.passport.user.userGroup === 'Facebook') {
@@ -301,19 +252,7 @@ app.route('/settings')
     .get((req, res) => {
         if (req.isAuthenticated()) {
             if (req.session.passport.user.userGroup === 'Local') {
-                Local.findById(req.user.id, (err, result) => {
-                    if (err)
-                        return console.log(err)
-                    else {
-                        res.render('settings', {
-                            username: result.displayname,
-                            userpicture: '/images/icons8-user-48.png',
-                            error: '',
-                            timeout: '',
-                            success: ''
-                        })
-                    }
-                })
+                Constructor.searchDBSettings(Local, req, res)
             } else if (req.session.passport.user.userGroup === 'Google') {
                 Constructor.searchDBSettings(Google, req, res)
             } else if (req.session.passport.user.userGroup === 'Facebook') {
@@ -326,65 +265,72 @@ app.route('/settings')
         }
     })
     .post((req, res) => {
-            if (req.isAuthenticated()) {
-                if (req.session.passport.user.userGroup === 'Local') {
-                    Local.findOne({_id: req.user.id}, (err, user) => {
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Local') {
+                Local.findOne({
+                    _id: req.user.id
+                }, (err, user) => {
 
-                        // Check if error connecting
-                        if (err) {res.json({success: false, message: err});} // Return error
-                        
+                    // Check if error connecting
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err
+                        });
+                    } // Return error
+                    else {
+                        // Check if user was found in database
+                        if (!user) {
+                            res.json({
+                                success: false,
+                                message: 'User not found'
+                            });
+                        } // Return error, user was not found in db
                         else {
-                            // Check if user was found in database
-                            if (!user) {res.json({success: false, message: 'User not found'});} // Return error, user was not found in db
-                            else {
-                                user.changePassword(req.body.password, req.body.newpassword, function (err) {
-                                    if (err) {
-                                        if (err.name === 'IncorrectPasswordError') {
-                                            Constructor.searchDBSettings(Local, req, res, passErrorMsg, '', '')
-                                        }
-                                        
-                                        else {
-                                            Constructor.searchDBSettings(Local, req, res, '', timeOutMsg, '')
-                                        }
+                            user.changePassword(req.body.password, req.body.newpassword, function (err) {
+                                if (err) {
+                                    if (err.name === 'IncorrectPasswordError') {
+                                        Constructor.searchDBSettings(Local, req, res, passErrorMsg, '', '')
                                     } else {
-                                        Constructor.searchDBSettings(Local, req, res, '', '', successMsg)
-                                    }                              
-                                })
-                            }
+                                        Constructor.searchDBSettings(Local, req, res, '', timeOutMsg, '')
+                                    }
+                                } else {
+                                    Constructor.searchDBSettings(Local, req, res, '', '', successMsg)
+                                }
+                            })
                         }
-                    })
-                }
-                else if (req.session.passport.user.userGroup === 'Google'){
-                    Constructor.searchDBSettings(Google, req, res, '', timeOutMsg, '')
-                }
-                else if (req.session.passport.user.userGroup === 'Facebook'){
-                    Constructor.searchDBSettings(Facebook, req, res, '', timeOutMsg, '')
-                }
-                else if (req.session.passport.user.userGroup === 'Instagram'){
-                    Constructor.searchDBSettings(Instagram, req, res, '', timeOutMsg, '')
-                }
-                
-                console.log(req.body.password); console.log(req.body.newpassword); console.log(req.body.repassword);
+                    }
+                })
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBSettings(Google, req, res, '', timeOutMsg, '')
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBSettings(Facebook, req, res, '', timeOutMsg, '')
+            } else if (req.session.passport.user.userGroup === 'Instagram') {
+                Constructor.searchDBSettings(Instagram, req, res, '', timeOutMsg, '')
             }
-            else{
-                res.redirect('/login')
-            }
-        })
+
+            console.log(req.body.password);
+            console.log(req.body.newpassword);
+            console.log(req.body.repassword);
+        } else {
+            res.redirect('/login')
+        }
+    })
 
 
-        
 
 
-        app
-        .route('/logout')
-        .get((req, res) => {
-            req.logout();
-            res.redirect('/login');
-        })
-        .post((req, res) => {
 
-        })
+app
+    .route('/logout')
+    .get((req, res) => {
+        req.logout();
+        res.redirect('/login');
+    })
+    .post((req, res) => {
 
-        app.listen(process.env.YOUR_PORT || process.env.PORT || port, host, () => {
-            console.log('Listening to server on port ' + port)
-        })
+    })
+
+app.listen(process.env.YOUR_PORT || process.env.PORT || port, host, () => {
+    console.log('Listening to server on port ' + port)
+})

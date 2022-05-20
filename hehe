@@ -1,0 +1,3 @@
+// userpicture: `<img src="${result.picture}" alt=""`
+userpicture: '<i class="uil uil-user-circle"></i>'
+<img src= <%= userpicture %> alt="">

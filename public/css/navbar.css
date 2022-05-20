@@ -49,10 +49,7 @@ h6 {
     --tran-03: all 0.2s ease;
 }
 
-body {
-    /* min-height: 100vh; */
-    /* background-color: var(--primary-color); */
-}
+/*  */
 
 body.dark {
     --primary-color: #3A3B3C;
@@ -595,7 +592,10 @@ nav.close~.dashboard .top {
 
 }
 
-.user-details img {}
+.userpicture i {
+    color: var(--black-light-color);
+    font-size: 2rem;
+}
 
 .username {
     margin-right: 10px;
