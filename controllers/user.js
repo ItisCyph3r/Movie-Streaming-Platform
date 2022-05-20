@@ -7,7 +7,8 @@ mongoose.connect('mongodb://localhost:27017/MovieDB')
 const localUserSchema = new mongoose.Schema({
     username: String,
     displayname: String,
-    password: String,
+    isValid: Boolean,
+    uniqueString: String
 })
 
 const googleUserSchema = new mongoose.Schema({

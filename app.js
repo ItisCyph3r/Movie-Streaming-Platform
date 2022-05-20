@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
+const nodemailer = require('nodemailer');
 const {
     Google,
     Facebook,
@@ -170,14 +171,44 @@ app
                             'pass_error': ''
                         })
                     } else {
+                        const sendMail = (email, uniqueString) => {
+                            var Transport = nodemailer.createTransport({
+                                service: 'Gmail',
+                                auth: {
+                                    user: process.env.EMAIL,
+                                    pass: process.env.PASS
+                                }
+                            });
+                
+                            var mailOptions;
+                            let sender = 'Zapnode';
+                            mailOptions = {
+                                from: sender,
+                                to: email,
+                                subject: 'Email Confirmation',
+                                html: `Press <a href= "http://localhost:3000/verify/${uniqueString}"> here </a> to verify your email. Thanks`
+                            };
+                
+                            Transport.sendMail(mailOptions, (err, response) => {
+                                if (err) return console.log(err)
+                                else return console.log(`${response} and Message Sent`)
+                            });
+                            
+                        }
+                        const userkey = randString()
+                        sendMail(req.body.username, userkey)
+                        console.log(userkey)
                         Local.register({
                             username: req.body.username,
-                            displayname: req.body.displayname
+                            displayname: req.body.displayname,
+                            isValid: false,
+                            uniqueString: userkey
                         }, req.body.password, function (err, user) {
                             if (err) {
                                 console.log(err)
                                 res.redirect('/signup')
                             } else {
+                                console.log(userkey)
                                 res.redirect('/login')
                             }
                         })
@@ -187,7 +218,52 @@ app
         })
     })
 
+function randString() {
+    const len = 8;
+    let randStr = '';
+    for (let i = 0; i < len; i++) {
+        const ch = Math.floor((Math.random() * 10) + 1)
+        randStr += ch
+    }
+    return randStr
+}
 
+app
+    .route('/verify')
+    .get((req, res) => {
+        const uniqueString = randString()
+
+        const sendMail = (email, uniqueString) => {
+            var Transport = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: req.body.username,
+                    pass: req.body.password
+                }
+            });
+
+            var mailOptions;
+            let sender = 'Zapnode';
+            mailOptions = {
+                from: sender,
+                to: email,
+                subject: 'Email Confirmation',
+                html: `Press <a href= "http://localhost:3000/verify/${uniqueString}"> here </a> to verify your email. Thanks`
+            };
+
+            Transport.sendMail(mailOptions, (err, response) => {
+                if (err) return console.log(err)
+                else return console.log(`${response} and Message Sent`)
+            });
+        }
+    })
+app
+    .route('/verify/:uniqueString')
+    .get((req, res) => {
+        const uniqueString = req.params.uniqueString
+        // console.log(uniqueString)
+
+    })
 
 app.get("/video/:videoid", function (req, res) {
     const range = req.headers.range;
