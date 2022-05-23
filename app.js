@@ -47,8 +47,6 @@ Strategies.passport()
 app
     .route('/')
     .get((req, res) => {
-        // https: //d2rakmst905e2v.cloudfront.net/thelionking.mp4
-
         res.send('<a href="/login"> Login </a>')
     })
     .post((req, res) => {
@@ -310,56 +308,6 @@ app.get("/video/:videoid", function (req, res) {
         })
     })
 })
-
-
-
-    //     https.get(, (req, res) => {
-    //         res.on('data', (response) => {
-    //             console.log(response)
-    //         })
-
-
-    // })
-
-
-    // const range = req.headers.range;
-    // if (!range) {
-    //     res.status(400).send("Requires Range header");
-    // }
-    // Movies.find({
-    //     name: req.params.videoid
-    // }, (err, found) => {
-    //     if (err)
-    //         return console.log(err)
-    //     else return found.forEach(element => {
-    //         if (req.params.videoid === element.name) {
-    //             const videoPath = __dirname + '/samples/' + element.name + '.mp4';
-    //             const videoSize = fs.statSync(__dirname + '/samples/' + element.name + '.mp4').size;
-    //             const CHUNK_SIZE = 10 ** 6;
-    //             const start = Number(range.replace(/\D/g, ""));
-    //             const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-    //             const contentLength = end - start + 1;
-    //             const headers = {
-    //                 "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-    //                 "Accept-Ranges": "bytes",
-    //                 "Content-Length": contentLength,
-    //                 "Content-Type": "video/mp4",
-    //             };
-    //             res.writeHead(206, headers);
-    //             const videoStream = fs.createReadStream(videoPath, {
-    //                 start,
-    //                 end
-    //             });
-    //             videoStream.pipe(res);
-    //         } else {
-    //             res.redirect('/watch');
-    //         }
-    //     })
-    // })
-
-
-// })
-
 
 
 app
