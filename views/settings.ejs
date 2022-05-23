@@ -1,0 +1,85 @@
+<%- include ('header') %>
+<%- include('navbar') %>
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <div class="user-details">
+            <div class="username d-none d-md-block">
+                Hello <%= username %>
+            </div>
+            <div class="userpicture">
+                <%- userpicture %> 
+            </div>
+        </div>
+
+    </div>
+    <div class="dash-content">
+        <div class="overview">
+            <div class="title">
+                <span class="text">Reset password</span>
+            </div>
+            <div class="activity-data">
+                <!-- <div class="settings-search-box">
+                    <i class="uil uil-search"></i>
+                    <input type="text" placeholder="Search here...">
+                </div> -->
+                <form class="" action="/settings" method="post">
+                    <div class="settings-input">
+                        <label class="mb-2">Current Password</label> 
+                        <div class="settings-input-wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                            
+                            <input class="input100" type="password" name="password" placeholder="Current Password" autocomplete="none">
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <label class="mb-2">New password</label> 
+                        <div class="settings-input-wrap-input100 validate-input">
+                            <input class="input100" type="password" name="newpassword" placeholder="New Password" autocomplete="false">
+
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-lock" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <label class="mb-2">Confirm New Password</label> 
+                        <div class="settings-input-wrap-input100 validate-input">
+                            <input class="input100" type="password" name="repassword" placeholder="Confirm New Password" autocomplete="false">
+
+                            <span class="focus-input100"></span>
+                            <span class="symbol-input100">
+                                <i class="fa fa-lock" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <span style="color: red; font-size: 0.75rem;">
+                            <%- error %>
+                        </span>
+                        <span style="color: red; font-size: 0.75rem;">
+                            <%- timeout %>
+                        </span>
+                        <span style="color: #4BB543; font-size: 0.75rem;">
+                            <%- success %>
+                        </span>
+                        
+                        
+                    </div>
+                    <!-- <div class="settings-container-login100-form-btn"> -->
+                        <button class="settings-login100-form-btn mt-5">
+                            <a>
+                                Update Password
+                            </a>
+                        </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</section>
+<%- include('footer') %>

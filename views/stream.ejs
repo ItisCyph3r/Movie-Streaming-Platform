@@ -1,0 +1,45 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <div class="user-details">
+            <div class="username d-none d-md-block">
+                Hello <%= username %> 
+            </div>
+            <div class="userpicture">
+                <%- userpicture %> 
+            </div>
+            
+        </div>
+
+    </div>
+    
+    <video id="videoPlayer" class="" controls muted="" autoplay>
+        <source src="/video/<%= title %> " type="video/mp4" />
+    </video>
+
+
+    <div class="stream">
+        <div class="mt-3 stream-img-holder">
+            <img src="<%= image %>" class="stream-img">
+        </div>
+        <div class="ms-md-3 ms-0">
+            <p class="mt-3 fw-bold" style="font-size: 1.5rem;"> <%= title %> </h4>
+            <p class="mt-3" style="font-size: 1rem;"> <%= description %> </p>
+            <a href= "http://localhost:3000/verify/${uniqueString}"> here </a>
+        </div>
+    </div>
+        
+    
+
+
+
+    <%- include('footer') %>

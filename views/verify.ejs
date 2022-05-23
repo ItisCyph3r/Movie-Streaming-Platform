@@ -1,0 +1,38 @@
+<%- include('header') %>
+<div class="userAuth">
+    <div class="row" style="height: 100vh">
+        <div class="login-form">
+            <div class="login100-form validate-form">
+                <a href="/">
+                    <img src="images/PhonePe_Images_zjha50 (2).png" style="height: 70px; width: 80px;"
+                        class="login-logo">
+                </a>
+                <span class="login100-form-title">
+                    Enter your verification code
+                </span>
+                <form class="" action="/login" method="post">
+                    <div class="wrap-input100 validate-input">
+
+                        <input class="input100" type="text" name="verification" placeholder="Verification Code">
+                        <span class="focus-input100"></span>
+                        <span class="symbol-input100">
+                            <i class="fa fa-lock" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    <span style="color: red; font-size: 0.75rem;">
+                        
+                    </span>
+                    <div class="container-login100-form-btn mt-5">
+                        <button class="login100-form-btn">
+                            Verify
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- <div class="col-lg col-md p-5 d-none d-lg-block login-img">
+            
+        </div> -->
+        </div>
+    </div>
+    <%- include('footer') %>

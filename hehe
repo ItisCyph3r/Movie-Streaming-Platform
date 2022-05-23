@@ -1,0 +1,41 @@
+// userpicture: `<img src="${result.picture}" alt=""`
+userpicture: '<i class="uil uil-user-circle"></i>'
+<img src= <%= userpicture %> alt="">
+
+
+
+// https.get('https://d2rakmst905e2v.cloudfront.net/thelionking.mp4', (req, res) => {
+    //         let data = '';
+
+    //         // A chunk of data has been received.
+            
+    //             // data += chunk;
+    //             if ((req != null) && (req.headers.range != null)) {
+    //                 var range = req.headers.range;
+    //                 var bytes = range.replace(/bytes=/, '').split('-');
+    //                 var start = parseInt(bytes[0], 10);
+    //                 var total = data.Contents[0].Size;
+    //                 var end = bytes[1] ? parseInt(bytes[1], 10) : total - 1;
+    //                 var chunksize = (end - start) + 1;
+    //                 console.log('declared range, bytes, start, total, end, chunksize vars');
+            
+    //                 res.writeHead(206, {
+    //                     'Content-Range'  : 'bytes ' + start + '-' + end + '/' + total,
+    //                     'Accept-Ranges'  : 'bytes',
+    //                     'Content-Length' : chunksize,
+    //                     'Last-Modified'  : data.Contents[0].LastModified,
+    //                     'Content-Type'   : 'video/mp4'
+    //                 });
+    //                 console.log('wrote header');
+    //                 chunk.createReadStream().pipe(res);
+    //             }
+            
+
+    //         // The whole response has been received. Print out the result.
+    //         // res.on('end', () => {
+    //         //     console.log(JSON.parse(data).explanation);
+    //         // });
+
+    //     }).on("error", (err) => {
+    //         console.log("Error: " + err.message);
+    //     });
