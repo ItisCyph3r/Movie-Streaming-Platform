@@ -8,7 +8,8 @@ const localUserSchema = new mongoose.Schema({
     username: String,
     displayname: String,
     isValid: Boolean,
-    uniqueString: String
+    uniqueString: String,
+    OTP: Number
 })
 
 const googleUserSchema = new mongoose.Schema({
