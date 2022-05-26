@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+require('dotenv').config()
 
-mongoose.connect('mongodb+srv://zapnodeAdmin:n5vYkFPVKjiFG01S@Zapnode.rh2p8.mongodb.net/MovieDB')
+mongoose.connect(process.env.USER_SECRET)
 
 const movieSchema = new mongoose.Schema({
     id: Number,

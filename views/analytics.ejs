@@ -1,0 +1,40 @@
+<%- include ('header') %>
+<%- include('navbar') %>
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <div class="user-details">
+            <div class="username d-none d-md-block">
+                Hello <%= username %>
+            </div>
+            <div class="userpicture">
+                <%- userpicture %> 
+            </div>
+        </div>
+
+    </div>
+    <div class="dash-content">
+        <div class="overview">
+            <div class="title">
+                <span class="text">Analytics</span>
+            </div>
+            <div class="activity-data">
+                <!-- <div class="settings-search-box">
+                    <i class="uil uil-search"></i>
+                    <input type="text" placeholder="Search here...">
+                </div> -->
+                <div class="coming-soon">
+                    Analytics Coming Soon ...
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+<%- include('footer') %>

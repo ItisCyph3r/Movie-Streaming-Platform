@@ -490,8 +490,56 @@ app.route('/settings')
     })
 
 
+app.route('/favorites')
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Local') {
+                Constructor.searchDBFavorites(Local, req, res)
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBFavorites(Google, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBFavorites(Facebook, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBFavorites(Instagram, req, res)
+            }
+        } else {
+            res.redirect('/login')
+        }
+    })
 
+app.route('/analytics')
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Local') {
+                Constructor.searchDBAnalytics(Local, req, res)
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBAnalytics(Google, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBAnalytics(Facebook, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBAnalytics(Instagram, req, res)
+            }
+        } else {
+            res.redirect('/login')
+        }
+    })
 
+app.route('/reviews')
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.session.passport.user.userGroup === 'Local') {
+                Constructor.searchDBReviews(Local, req, res)
+            } else if (req.session.passport.user.userGroup === 'Google') {
+                Constructor.searchDBReviews(Google, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBReviews(Facebook, req, res)
+            } else if (req.session.passport.user.userGroup === 'Facebook') {
+                Constructor.searchDBReviews(Instagram, req, res)
+            }
+        } else {
+            res.redirect('/login')
+        }
+    })
 
 app
     .route('/logout')

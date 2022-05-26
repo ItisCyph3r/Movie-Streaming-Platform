@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 const findOrCreate = require('mongoose-findorcreate')
+require('dotenv').config()
 
-// mongoose.connect('mongodb://localhost:27017/MovieDB')
-mongoose.connect('mongodb+srv://zapnodeAdmin:n5vYkFPVKjiFG01S@Zapnode.rh2p8.mongodb.net/MovieDB')
+mongoose.connect(process.env.USER_SECRET)
 
 const localUserSchema = new mongoose.Schema({
     username: String,

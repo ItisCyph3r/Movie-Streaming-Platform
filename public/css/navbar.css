@@ -846,3 +846,6 @@ nav.close~.dashboard .top {
     user-select: none;
     z-index: 10;
 }
+.coming-soon{
+    color: var(--text-color);
+}

@@ -30,7 +30,7 @@ module.exports.searchDB = (db, req, res, next) => {
                         else {
                             // console.log(randomArrayShuffle(found))
                             res.render('index', {
-                                movie: found,
+                                movie: randomArrayShuffle(found),
                                 username: result.displayname,
                                 userpicture: '<i class="uil uil-user-circle"></i>'
                             });
@@ -153,6 +153,96 @@ module.exports.searchDBSettings = (db, req, res, error, timeout, success) => {
                         error: error,
                         timeout: timeout,
                         success: success
+                    })
+                }
+            }
+        })
+    }
+}
+
+module.exports.searchDBFavorites = (db, req, res) => {
+    if (db === Local) {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('favorites', {
+                        username: result.displayname,
+                        userpicture: '<i class="uil uil-user-circle"></i>',
+                    })
+                }
+            }
+        })
+    } else {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('favorites', {
+                        username: result.username,
+                        userpicture: `<img src= ${result.picture} alt="">`,
+                    })
+                }
+            }
+        })
+    }
+}
+
+module.exports.searchDBAnalytics = (db, req, res) => {
+    if (db === Local) {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('analytics', {
+                        username: result.displayname,
+                        userpicture: '<i class="uil uil-user-circle"></i>',
+                    })
+                }
+            }
+        })
+    } else {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('analytics', {
+                        username: result.username,
+                        userpicture: `<img src= ${result.picture} alt="">`,
+                    })
+                }
+            }
+        })
+    }
+}
+
+module.exports.searchDBReviews = (db, req, res) => {
+    if (db === Local) {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('reviews', {
+                        username: result.displayname,
+                        userpicture: '<i class="uil uil-user-circle"></i>',
+                    })
+                }
+            }
+        })
+    } else {
+        db.findById(req.user.id, (err, result) => {
+            if (err)
+                return console.log(err)
+            else {
+                if (result) {
+                    res.render('reviews', {
+                        username: result.username,
+                        userpicture: `<img src= ${result.picture} alt="">`,
                     })
                 }
             }
