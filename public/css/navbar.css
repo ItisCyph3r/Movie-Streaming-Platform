@@ -503,7 +503,7 @@ nav.close~.dashboard .top {
     }
 
     .stream {
-        flex-direction: column;
+        /* flex-direction: column; */
     }
 
     .settings-input-wrap-input100 {
