@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/MovieDB')
+mongoose.connect('mongodb+srv://zapnodeAdmin:n5vYkFPVKjiFG01S@Zapnode.rh2p8.mongodb.net/MovieDB')
 
 const movieSchema = new mongoose.Schema({
     id: Number,
