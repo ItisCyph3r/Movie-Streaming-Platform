@@ -34,7 +34,7 @@ module.exports.passport = () => {
     passport.use(new FacebookStrategy({
             clientID: process.env.FACEBOOK_APP_ID,
             clientSecret: process.env.FACEBOOK_APP_SECRET,
-            callbackURL: "http://localhost:3000/auth/facebook/watch",
+            callbackURL: "https://zapnodetv.herokuapp.com/auth/facebook/watch",
         },
         function (accessToken, refreshToken, profile, cb) {
             const picture = `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
