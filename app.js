@@ -3,13 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
-const nodemailer = require('nodemailer');
-const {
-    Google,
-    Facebook,
-    Instagram,
-    Local
-} = require(__dirname + '/controllers/user')
+const {Google, Facebook, Instagram, Local} = require(__dirname + '/controllers/user')
 const Movies = require(__dirname + '/controllers/movie');
 const Constructor = require(__dirname + '/controllers/pageConstructor');
 const Strategies = require(__dirname + '/controllers/strategies');
@@ -18,12 +12,8 @@ const app = express();
 const port = 3000;
 const host = '0.0.0.0'
 const https = require('https');
-const {
-    Auth
-} = require('two-step-auth');
-const {
-    response
-} = require('express');
+const {Auth} = require('two-step-auth');
+
 
 let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
@@ -31,6 +21,7 @@ let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid pas
 let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!!! Please try again after sometime.'
 let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
 let verifyErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid validation code'
+let verifyAcct = '<i class="fa-solid fa-circle-check"></i> This account is verified'
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
     extended: true
@@ -211,16 +202,8 @@ app
         })
     })
 
-function randString() {
-    const len = 8;
-    let randStr = '';
-    for (let i = 0; i < len; i++) {
-        const ch = Math.floor((Math.random() * 10) + 1)
-        randStr += ch
-    }
-    return randStr
-}
-let code = verificationCode(32)
+
+
 // console.log(code)
 
 function verificationCode(count) {
@@ -233,6 +216,21 @@ function verificationCode(count) {
     return result;
 }
 
+function uuid() {
+    const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    const xAndYOnly = /[xy]/g;
+
+    return template.replace(xAndYOnly, (character) => {
+        const randomNo = Math.floor(Math.random() * 16);
+        const newValue = character === 'x' ? randomNo : (randomNo & 0x3) | 0x8;
+
+        return newValue.toString(16);
+    });
+}
+// console.log(uuid())
+// let code = verificationCode(32)
+let code = uuid()
+
 app
     .route('/generateToken/:uniqueString')
     .get((req, res) => {
@@ -240,21 +238,32 @@ app
         Local.findOne({
             uniqueString: req.params.uniqueString
         }, (err, doc) => {
-            async function login() {
-                const response = await Auth(doc.username, "Zapnode");
-                // console.log(response);
-                // console.log(response.mail);
-                // console.log(response.OTP);
-                // console.log(response.success);
-                let {
-                    OTP
-                } = await response;
-
-                console.log(req.params.uniqueString)
+            if (doc.isValid === true) {
                 res.redirect(`/verify/${req.params.uniqueString}`)
+            } else {
+                async function OTPgenerator() {
+                    const response = await Auth(doc.username, "Zapnode");
+
+                    Local.updateOne({
+                        uniqueString: req.params.uniqueString
+                    }, {
+                        OTP: response.OTP
+                    }, {
+                        upsert: true
+                    }, (err, body) => {
+                        if (err) return console.log(err)
+                        else {
+                            // console.log(body)
+                            res.redirect(`/verify/${req.params.uniqueString}`)
+                        }
+                    })
+                }
+                OTPgenerator()
             }
-            login()
+
         })
+
+
     })
 
 app
@@ -264,6 +273,7 @@ app
             uniqueString: req.params.uniqueString
         }, (err, doc) => {
             res.render('verify', {
+                verify: '',
                 url: doc.uniqueString,
                 verifySuccess: '',
                 verifyError: '',
@@ -273,42 +283,61 @@ app
 
     })
     .post((req, res) => {
-        
         Local.findOne({
             uniqueString: req.params.uniqueString
         }, (err, doc) => {
             if (err) return console.log(err)
             if (doc) {
-                if (doc.OTP === parseInt(req.body.verification)) {
 
-                    Local.updateOne({
-                        uniqueString: req.params.uniqueString
-                    }, {
-                        isValid: true
-                    }, {
-                        upsert: true
-                    }, (err, body) => {
-                        if (err) return console.log(err)
-                        else {
-                            // console.log(doc)
-                            res.render('verify', {
-                                url: doc.uniqueString,
-                                verifySuccess: verifySuccessMsg,
-                                verifyError: '',
-                                verifyTimeout: ''
-                            })
-                        }
-                    });
-                } else {
+                if (doc.isValid === true) {
+
                     res.render('verify', {
+                        verify: verifyAcct,
                         url: doc.uniqueString,
                         verifySuccess: '',
-                        verifyError: verifyErrorMsg,
+                        verifyError: '',
                         verifyTimeout: ''
                     })
+                } else {
+
+                    if (doc.OTP === parseInt(req.body.one.join(''))) {
+                        Local.updateOne({
+                            uniqueString: req.params.uniqueString
+                        }, {
+                            isValid: true
+                        }, {
+                            upsert: true
+                        }, (err, body) => {
+                            if (err) return console.log(err)
+                            else {
+
+                                res.render('verify', {
+                                    verify: '',
+                                    url: doc.uniqueString,
+                                    verifySuccess: verifySuccessMsg,
+                                    verifyError: '',
+                                    verifyTimeout: ''
+                                })
+                            }
+                            setTimeout(() => {
+                                res.redirect('/login');
+                            }, 5000)
+                        });
+                    } else {
+
+                        res.render('verify', {
+                            verify: '',
+                            url: doc.uniqueString,
+                            verifySuccess: '',
+                            verifyError: verifyErrorMsg,
+                            verifyTimeout: ''
+                        })
+                    }
                 }
             } else {
+
                 res.render('verify', {
+                    verify: '',
                     url: doc.uniqueString,
                     verifySuccess: '',
                     verifyError: '',
@@ -334,16 +363,16 @@ app.get("/video/:videoid", function (req, res) {
 
                         let fileLength = stream.headers['content-length'];
                         let contentType = stream.headers['content-type'];
-                        console.log(stream.headers['content-length']);
-                        console.log('====================================');
-                        console.log(stream.headers['content-type']);
-                        console.log('====================================');
-                        console.log(stream.headers)
+                        // console.log(stream.headers['content-length']);
+                        // console.log('====================================');
+                        // console.log(stream.headers['content-type']);
+                        // console.log('====================================');
+                        // console.log(stream.headers)
 
                         // let chunkSize   = foundMetaFile['chunkSize'];
                         if (req.headers['range']) {
                             // Range request, partialle stream the file
-                            console.log('Range Reuqest');
+                            // console.log('Range Reuqest');
                             var parts = req.headers['range'].replace(/\D/g, "");
                             var partialStart = parts[0];
                             var partialEnd = parts[1];
@@ -352,7 +381,7 @@ app.get("/video/:videoid", function (req, res) {
                             var end = partialEnd ? parseInt(partialEnd, 10) : fileLength - 1;
                             var chunkSize = (end - start) + 1;
 
-                            console.log('Range ', start, '-', end);
+                            // console.log('Range ', start, '-', end);
 
                             res.writeHead(206, {
                                 'Content-Range': 'bytes ' + start + '-' + end + '/' + fileLength,
@@ -476,6 +505,10 @@ app
     .post((req, res) => {
 
     })
+
+app.get('*', (req, res) => {
+    res.render('404')
+})
 
 app.listen(process.env.YOUR_PORT || process.env.PORT || port, host, () => {
     console.log('Listening to server on port ' + port)
