@@ -319,9 +319,6 @@ app
                                     verifyTimeout: ''
                                 })
                             }
-                            setTimeout(() => {
-                                res.redirect('/login');
-                            }, 5000)
                         });
                     } else {
 
