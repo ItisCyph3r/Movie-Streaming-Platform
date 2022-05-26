@@ -4,13 +4,13 @@
         <div class="login-form">
             <div class="login100-form validate-form">
                 <a href="/">
-                    <img src="images/PhonePe_Images_zjha50 (2).png" style="height: 70px; width: 80px;"
+                    <img src="/images/PhonePe_Images_zjha50 (2).png" style="height: 70px; width: 80px;"
                         class="login-logo">
                 </a>
                 <span class="login100-form-title">
                     Enter your verification code
-                </span>
-                <form class="" action="/login" method="post">
+                </span> 
+                <form class="" action="/verify/<%= url %> " method="post">
                     <div class="wrap-input100 validate-input">
 
                         <input class="input100" type="text" name="verification" placeholder="Verification Code">
@@ -19,20 +19,41 @@
                             <i class="fa fa-lock" aria-hidden="true"></i>
                         </span>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span style="color: red; font-size: 0.75rem;">
+                                <%- verifyError %>
+                            </span>
+                            <span style="color: #4BB543; font-size: 0.75rem;">
+                                <%- verifySuccess %>
+                            </span>
+                            <span style="color: red; font-size: 0.75rem;">
+                                <%- verifyTimeout %>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.75rem;" class=""><a href="/generateToken/<%= url %>">Resend verification code?</a></p>
+                        </div>
+                    </div>
 
-                    <span style="color: red; font-size: 0.75rem;">
-                        
                     </span>
+                    
                     <div class="container-login100-form-btn mt-5">
                         <button class="login100-form-btn">
                             Verify
                         </button>
                     </div>
+                    
                 </form>
+                <!-- <form>
+                    <input type="hidden" name="ffs" value="">
+                </form> -->
+                
             </div>
             <!-- <div class="col-lg col-md p-5 d-none d-lg-block login-img">
             
         </div> -->
+        
         </div>
+        
     </div>
     <%- include('footer') %>

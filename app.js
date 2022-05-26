@@ -19,6 +19,9 @@ const port = 3000;
 const host = '0.0.0.0'
 const https = require('https');
 const {
+    Auth
+} = require('two-step-auth');
+const {
     response
 } = require('express');
 
@@ -27,7 +30,7 @@ let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That u
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!!! Please try again after sometime.'
 let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
-
+let verifyErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid validation code'
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
     extended: true
@@ -176,70 +179,32 @@ app
                             'pass_error': ''
                         })
                     } else {
-                        // const sendMail = (email, uniqueString) => {
-                        //     var Transport = nodemailer.createTransport({
-                        //         service: 'Gmail',
-                        //         auth: {
-                        //             user: process.env.EMAIL,
-                        //             pass: process.env.PASS
-                        //         }
-                        //     });
-                        //     const userkey = verificationCode(6)
-                        //     var mailOptions;
-                        //     let sender = 'Zapnode';
-                        //     mailOptions = {
-                        //         from: sender,
-                        //         to: email,
-                        //         subject: 'Email Confirmation',
-                        //         html: `Your verification code is ${uniqueString}`
-                        //         // html: `Press <a href= "http://localhost:3000/verify/${uniqueString}"> here </a> to verify your email. Thanks`
-                        //     };
-
-                        //     Transport.sendMail(mailOptions, (err, response) => {
-                        //         if (err) return console.log(err)
-                        //         else return console.log(`${response} and Message Sent`)
-                        //     });
-
-                        // }
-
-
-                        // sendMail(req.body.username, code)
-
-                        // console.log(userkey)
-                        const sendMail = (email, uniqueString) => {
-                            const mailgun = require("mailgun-js");
-                            const DOMAIN = 'https://api.mailgun.net/v3/sandbox39e2e6cdd0354240be28ee24209e8779.mailgun.org';
-                            const mg = mailgun({
-                                apiKey: '397950ce67073ef4b67e056fe8315c7f-5e7fba0f-2495afbb',
-                                domain: DOMAIN
-                            });
-                            const data = {
-                                from: 'Zapnode',
-                                to: email,
-                                subject: 'VERIFICATION CODE',
-                                text: `Your verification code is ${uniqueString}`
-                            };
-                            mg.messages().send(data, function (error, body) {
-                                if (error) return console.log(error)
-                                else return console.log(body)
-                            });
-
+                        async function login() {
+                            const response = await Auth(req.body.username, "Zapnode");
+                            // console.log(response);
+                            // console.log(response.mail);
+                            // console.log(response.OTP);
+                            // console.log(response.success);
+                            let {
+                                OTP
+                            } = await response;
+                            Local.register({
+                                username: req.body.username,
+                                displayname: req.body.displayname,
+                                isValid: false,
+                                uniqueString: code,
+                                OTP: OTP,
+                            }, req.body.password, function (err, user) {
+                                if (err) {
+                                    console.log(err)
+                                    res.redirect('/signup')
+                                } else {
+                                    // console.log(code)
+                                    res.redirect(`/verify/${code}`)
+                                }
+                            })
                         }
-                        sendMail(req.body.username, code)
-                        Local.register({
-                            username: req.body.username,
-                            displayname: req.body.displayname,
-                            isValid: false,
-                            uniqueString: code
-                        }, req.body.password, function (err, user) {
-                            if (err) {
-                                console.log(err)
-                                res.redirect('/signup')
-                            } else {
-                                console.log(code)
-                                res.redirect('/verify')
-                            }
-                        })
+                        login()
                     }
                 });
             }
@@ -255,8 +220,8 @@ function randString() {
     }
     return randStr
 }
-let code = verificationCode(6)
-console.log(code)
+let code = verificationCode(32)
+// console.log(code)
 
 function verificationCode(count) {
     var chars = 'acdefhiklmnoqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -268,47 +233,146 @@ function verificationCode(count) {
     return result;
 }
 
-console.log(verificationCode(6))
 app
-    .route('/verify')
+    .route('/generateToken/:uniqueString')
     .get((req, res) => {
-        res.render('verify', {})
+
+        Local.findOne({
+            uniqueString: req.params.uniqueString
+        }, (err, doc) => {
+            async function login() {
+                const response = await Auth(doc.username, "Zapnode");
+                // console.log(response);
+                // console.log(response.mail);
+                // console.log(response.OTP);
+                // console.log(response.success);
+                let {
+                    OTP
+                } = await response;
+
+                console.log(req.params.uniqueString)
+                res.redirect(`/verify/${req.params.uniqueString}`)
+            }
+            login()
+        })
     })
-    .post((req, res) => {
-        if (req.body.verification === code) {
-            res.redirect('/login')
-        } else {
-            res.redirect('/signup')
-        }
-    })
+
 app
     .route('/verify/:uniqueString')
     .get((req, res) => {
-        const uniqueString = req.params.uniqueString
-        // console.log(uniqueString)
+        Local.findOne({
+            uniqueString: req.params.uniqueString
+        }, (err, doc) => {
+            res.render('verify', {
+                url: doc.uniqueString,
+                verifySuccess: '',
+                verifyError: '',
+                verifyTimeout: ''
+            })
+        })
 
     })
+    .post((req, res) => {
+        
+        Local.findOne({
+            uniqueString: req.params.uniqueString
+        }, (err, doc) => {
+            if (err) return console.log(err)
+            if (doc) {
+                if (doc.OTP === parseInt(req.body.verification)) {
 
+                    Local.updateOne({
+                        uniqueString: req.params.uniqueString
+                    }, {
+                        isValid: true
+                    }, {
+                        upsert: true
+                    }, (err, body) => {
+                        if (err) return console.log(err)
+                        else {
+                            // console.log(doc)
+                            res.render('verify', {
+                                url: doc.uniqueString,
+                                verifySuccess: verifySuccessMsg,
+                                verifyError: '',
+                                verifyTimeout: ''
+                            })
+                        }
+                    });
+                } else {
+                    res.render('verify', {
+                        url: doc.uniqueString,
+                        verifySuccess: '',
+                        verifyError: verifyErrorMsg,
+                        verifyTimeout: ''
+                    })
+                }
+            } else {
+                res.render('verify', {
+                    url: doc.uniqueString,
+                    verifySuccess: '',
+                    verifyError: '',
+                    verifyTimeout: timeOutMsg
+                })
+            }
+        })
+    })
+let verifySuccessMsg = '<i class="fa-solid fa-circle-check"></i> Email verification successfull'
 
 app.get("/video/:videoid", function (req, res) {
-    Movies.find({name: req.params.videoid}, (err, found) => {
+    Movies.find({
+        name: req.params.videoid
+    }, (err, found) => {
         if (err) return console.log(err)
         else return found.forEach(element => {
             if (req.params.videoid === element.name) {
-                console.log(element.name)
+                // console.log(element.name)
                 const url = `${process.env.S3BUCKET}/${element.name}.mp4`
                 https.get(url, (stream) => {
-                    if(err) return console.log(err)
-                    else return stream.pipe(res);
+                    if (err) return console.log(err)
+                    else {
+
+                        let fileLength = stream.headers['content-length'];
+                        let contentType = stream.headers['content-type'];
+                        console.log(stream.headers['content-length']);
+                        console.log('====================================');
+                        console.log(stream.headers['content-type']);
+                        console.log('====================================');
+                        console.log(stream.headers)
+
+                        // let chunkSize   = foundMetaFile['chunkSize'];
+                        if (req.headers['range']) {
+                            // Range request, partialle stream the file
+                            console.log('Range Reuqest');
+                            var parts = req.headers['range'].replace(/\D/g, "");
+                            var partialStart = parts[0];
+                            var partialEnd = parts[1];
+
+                            var start = parseInt(partialStart, 10);
+                            var end = partialEnd ? parseInt(partialEnd, 10) : fileLength - 1;
+                            var chunkSize = (end - start) + 1;
+
+                            console.log('Range ', start, '-', end);
+
+                            res.writeHead(206, {
+                                'Content-Range': 'bytes ' + start + '-' + end + '/' + fileLength,
+                                'Accept-Ranges': 'bytes',
+                                'Content-Length': chunkSize,
+                                'Content-Type': contentType
+                            });
+
+                            stream.pipe(res);
+                        } else {
+                            res.redirect('/watch')
+                        }
+                    }
                 });
-            }
-            else {
+            } else {
                 res.redirect('/watch');
             }
         })
     })
 })
-
 
 app
     .route('/watch/featured/:postId')
