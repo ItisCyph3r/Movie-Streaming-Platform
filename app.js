@@ -3,7 +3,12 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
-const {Google, Facebook, Instagram, Local} = require(__dirname + '/controllers/user')
+const {
+    Google,
+    Facebook,
+    Instagram,
+    Local
+} = require(__dirname + '/controllers/user')
 const Movies = require(__dirname + '/controllers/movie');
 const Constructor = require(__dirname + '/controllers/pageConstructor');
 const Strategies = require(__dirname + '/controllers/strategies');
@@ -12,8 +17,11 @@ const app = express();
 const port = 3000;
 const host = '0.0.0.0'
 const https = require('https');
-const {Auth} = require('two-step-auth');
-
+const {
+    Auth
+} = require('two-step-auth');
+const request = require('request');
+const streambuffers = require('stream-buffers');
 
 let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
@@ -354,6 +362,54 @@ app.get("/video/:videoid", function (req, res) {
             if (req.params.videoid === element.name) {
                 // console.log(element.name)
                 const url = `${process.env.S3BUCKET}/${element.name}.mov`
+
+
+                // var range = req.headers.range;
+                // var positions = range.replace(/bytes=/, "").split("-");
+                // var start = parseInt(positions[0], 10);
+
+                // var objectPath = `${process.env.S3BUCKET}/${element.name}.mov`
+                // console.log(objectPath)
+                // request.get({
+                //     url: objectPath,
+                //     headers: {
+                //         'content-type': 'video/mp4'
+                //     },
+                //     encoding: null
+                // }, function (err, data) {
+                //     if (err) {
+                //         console.log('error', err);
+                //     } else {
+                //         var total = data.body.length;
+                //         var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+                //         var chunksize = (end - start) + 1;
+
+                //         console.log("bytes " + start + "-" + end + "/" + total);
+                //         res.writeHead(206, {
+                //             "Content-Range": "bytes " + start + "-" + end + "/" + total,
+                //             "Accept-Ranges": "bytes",
+                //             "Content-Type": 'video/mp4',
+                //             "Content-Length": chunksize
+                //         });
+                //         var bodyStream = new streambuffers.ReadableStreamBuffer({
+                //             frequency: 1,
+                //             chunksize: 256
+                //         });
+                //         bodyStream.pipe(res);
+                //         bodyStream.put(data.body);
+                //     }
+                // });
+
+
+
+
+
+
+
+
+
+
+
                 https.get(url, (stream) => {
                     if (err) return console.log(err)
                     else {
