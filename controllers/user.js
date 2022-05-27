@@ -3,8 +3,8 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const findOrCreate = require('mongoose-findorcreate')
 require('dotenv').config()
 
-// mongoose.connect(process.env.USER_SECRET)
-mongoose.connect('mongodb://localhost:27017/MovieDB')
+mongoose.connect(process.env.USER_SECRET)
+// mongoose.connect('mongodb://localhost:27017/MovieDB')
 
 
 const localUserSchema = new mongoose.Schema({
