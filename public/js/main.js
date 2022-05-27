@@ -43,17 +43,50 @@
 })(jQuery);
 
 // JS CODEJavaScript
-const codes = document.querySelectorAll('.code')
+// const codes = document.querySelectorAll('.code')
  
-codes[0].focus()
+// codes[0].focus()
  
-codes.forEach((code, idx) => {
-    code.addEventListener('keydown', (e) => {
-        if(e.key >= 0 && e.key <=9) {
-            codes[idx].value = ''
-            setTimeout(() => codes[idx + 1].focus(), 10)
-        } else if(e.key === 'Backspace') {
-            setTimeout(() => codes[idx - 1].focus(), 10)
-        }
+// codes.forEach((code, idx) => {
+//     code.addEventListener('keydown', (e) => {
+//         if(e.key >= 0 && e.key <=9) {
+//             codes[idx].value = ''
+//             setTimeout(() => codes[idx + 1].focus(), 10)
+//         } else if(e.key === 'Backspace') {
+//             setTimeout(() => codes[idx - 1].focus(), 10)
+//         }
+//     })
+// })
+console.log('working')
+
+const search = document.querySelector(".search-box input"),
+images = document.querySelectorAll(".imageBox"),
+carousell = document.querySelector('.showwcase'),
+notFound = document.querySelector('.notFound');
+
+
+search.addEventListener("keypress", e => {
+    carousell.classList.add("block")
+	let searcValue = search.value,
+		value = searcValue.toLowerCase();
+	images.forEach(image => {
+		// if (value === image.dataset.name) { //matching value with getting attribute of images
+		if (image.dataset.name.includes(value.split())) { 
+			return image.style.display = "block";
+		}
+		else{
+			notFound.classList.add('resultFound');
+			image.style.display = "none";
+		}
+		notFound.classList.remove('resultFound');
+	});
+
+});
+
+search.addEventListener("keyup", () => {
+    if (search.value != "") return;
+
+    images.forEach(image => {
+        image.style.display = "block";
     })
 })

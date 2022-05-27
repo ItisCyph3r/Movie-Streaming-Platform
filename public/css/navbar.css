@@ -849,3 +849,16 @@ nav.close~.dashboard .top {
 .coming-soon{
     color: var(--text-color);
 }
+.block{
+    display: none;
+}
+.ffss{
+    color: var(--text-color);
+}
+.notFound{
+    display: none;
+    color: var(--text-color);
+}
+.resultFound{
+    display: block;
+}

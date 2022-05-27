@@ -23,36 +23,42 @@
     </div>
 <div class="dash-content">
     <div class="overview">
-        <div class="title">
-            <span class="text">Trending Movies</span>
+        <div class="notFound">
+            Results not found!
         </div>
-
-        <div class="activity-data">
-            <section class="ftco-section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="featured-carousel owl-carousel">
-                                <% for(var element= (movie.length-1); element>=0; element--){ %>
-                                <div class="item">
-                                    <div class="work">
-                                        <div class="img d-flex align-items-end justify-content-center"
-                                            style="background-image: url('<%= movie[element].posterImage %>');">
-                                            <div class="text w-100">
-                                                <!-- <span class="cat">Web Design</span> -->
-                                                <h3><a href="/watch/featured/<%= movie[element].name %>"><%= movie[element].name %></a></h3>
+        <div class="showwcase">
+            <div class="title">
+                <span class="text">Trending Movies</span>
+            </div>
+    
+            <div class="activity-data">
+                <section class="ftco-section">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="featured-carousel owl-carousel">
+                                    <% for(var element= (movie.length-1); element>=0; element--){ %>
+                                    <div class="item">
+                                        <div class="work">
+                                            <div class="img d-flex align-items-end justify-content-center"
+                                                style="background-image: url('<%= movie[element].posterImage %>');">
+                                                <div class="text w-100">
+                                                    <!-- <span class="cat">Web Design</span> -->
+                                                    <h3><a href="/watch/featured/<%= movie[element].name %>"><%= movie[element].name %></a></h3>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <% } %>
                                 </div>
-                                <% } %>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>           
+                </section>           
+            </div>
+    
         </div>
-
+        
         <div class="title"> 
             <span class="text">Featured</span>
         </div>
@@ -61,9 +67,8 @@
             <div class="video-block section-padding">
                 <div class="row">
                     <% movie.forEach(element => { %>
-                    <div class="col-lg-3 col-md-6 col-sm-12 mt-5 mt-md-0">
-                        <div class="video-card-image">
-                            <!-- const formattedUrl = element.name.toLowerCase().split(' ').join('%20'); -->
+                    <div class="col-lg-3 col-md-6 col-sm-12 mt-5 mt-md-0 imageBox" data-name="<%= element.name.toLowerCase() %>">
+                        <div class="video-card-image">                            
                             <a href="/watch/featured/<%= element.name %>">
                                 <img class="img-fluid" src=" <%= element.posterImage %>" alt="" >
                             </a>
