@@ -353,7 +353,7 @@ app.get("/video/:videoid", function (req, res) {
         else return found.forEach(element => {
             if (req.params.videoid === element.name) {
                 // console.log(element.name)
-                const url = `${process.env.S3BUCKET}/${element.name}.mp4`
+                const url = `${process.env.S3BUCKET}/${element.name}.mov`
                 https.get(url, (stream) => {
                     if (err) return console.log(err)
                     else {
