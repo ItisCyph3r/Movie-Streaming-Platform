@@ -276,7 +276,11 @@ app
 app
 .route('/verify')
 .get((req, res) => {
+<<<<<<< HEAD
     res.render('checker')
+=======
+    res.render('checker', {error: ''})
+>>>>>>> test
 })
 .post((req, res) => {
     Local.findOne({username: req.body.username}, (err, found) => {
