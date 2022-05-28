@@ -28,6 +28,7 @@ let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That u
 let passErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid password, Try again'
 let timeOutMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Something went wrong!!! Please try again after sometime.'
 let successMsg = '<i class="fa-solid fa-circle-check"></i> Your password has been changed successfully.'
+let emailNull = '<i class="fa-solid fa-triangle-exclamation"></i> Sorry this email does not exist.'
 let verifyErrorMsg = '<i class="fa-solid fa-triangle-exclamation"></i> Invalid validation code'
 let verifyAcct = '<i class="fa-solid fa-circle-check"></i> This account is verified'
 app.set('view engine', 'ejs');
@@ -177,34 +178,32 @@ app
                             'usernameErr': usernameErr,
                             'pass_error': ''
                         })
-                    } else {
-                        async function login() {
-                            const response = await Auth(req.body.username, "Zapnode");
+                    } 
+                    else {
+                        
                             // console.log(response);
                             // console.log(response.mail);
                             // console.log(response.OTP);
                             // console.log(response.success);
-                            let {
-                                OTP
-                            } = await response;
-                            Local.register({
-                                username: req.body.username,
-                                displayname: req.body.displayname,
-                                isValid: false,
-                                uniqueString: code,
-                                OTP: OTP,
-                            }, req.body.password, function (err, user) {
-                                if (err) {
-                                    console.log(err)
-                                    res.redirect('/signup')
-                                } else {
-                                    // console.log(code)
-                                    res.redirect(`/verify/${code}`)
-                                }
-                            })
-                        }
-                        login()
+                            
+                        Local.register({
+                            username: req.body.username,
+                            displayname: req.body.displayname,
+                            isValid: false,
+                            uniqueString: code,
+                                // OTP: OTP,
+                        }, req.body.password, function (err, user) {
+                            if (err) {
+                                console.log(err)
+                                res.redirect('/signup')
+                            } else {
+                                // console.log(code)
+                                res.redirect('/verify')
+                                // res.redirect(`/verify/${code}`)
+                            }
+                        })
                     }
+                        
                 });
             }
         })
@@ -273,6 +272,52 @@ app
 
 
     })
+
+app
+.route('/verify')
+.get((req, res) => {
+    res.render('checker')
+})
+.post((req, res) => {
+    
+        console.log(req.body.username)
+        
+        Local.findOne({username: req.body.username}, (err, found) => {
+            if(err) return console.log(err)
+            else{
+                if (!found){
+                    res.render('checker', 
+                    {error: emailNull})
+                }
+                else{
+                    if(found.OTP){
+                        res.redirect(`/verify/${found.uniqueString}`)
+                    }
+                    else{
+                        async function login() {
+                            const response = await Auth(req.body.username, "Zapnode");
+                            Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
+                                if(err) return console.log(err)
+                                else{
+                                    console.log(doc)
+                                    res.redirect(`/verify/${found.uniqueString}`)
+                                } 
+                            })
+                        }
+                        login()
+                    }
+                }
+            }
+        })
+        // Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
+        //     if(err) return console.log(err)
+        //     else return console.log(doc)
+        // })
+
+        // console.log(response)
+    
+})
+
 
 app
     .route('/verify/:uniqueString')
