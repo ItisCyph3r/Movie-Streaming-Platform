@@ -276,39 +276,35 @@ app
 app
 .route('/verify')
 .get((req, res) => {
-    res.render('checker')
+    res.render('checker', {error: ''})
 })
 .post((req, res) => {
-    
-        console.log(req.body.username)
-        
-        Local.findOne({username: req.body.username}, (err, found) => {
-            if(err) return console.log(err)
+    Local.findOne({username: req.body.username}, (err, found) => {
+        if(err) return console.log(err)
+        else{
+            if (!found){
+                res.render('checker', 
+                {error: emailNull})
+            }
             else{
-                if (!found){
-                    res.render('checker', 
-                    {error: emailNull})
+                if(found.OTP){
+                    res.redirect(`/verify/${found.uniqueString}`)
                 }
                 else{
-                    if(found.OTP){
-                        res.redirect(`/verify/${found.uniqueString}`)
+                    async function generateToken() {
+                        const response = await Auth(req.body.username, "Zapnode");
+                        Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
+                            if(err) return console.log(err)
+                            else{
+                                res.redirect(`/verify/${found.uniqueString}`)
+                            } 
+                        })
                     }
-                    else{
-                        async function login() {
-                            const response = await Auth(req.body.username, "Zapnode");
-                            Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
-                                if(err) return console.log(err)
-                                else{
-                                    console.log(doc)
-                                    res.redirect(`/verify/${found.uniqueString}`)
-                                } 
-                            })
-                        }
-                        login()
-                    }
+                    generateToken()
                 }
             }
-        })
+        }
+    })
         // Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
         //     if(err) return console.log(err)
         //     else return console.log(doc)
