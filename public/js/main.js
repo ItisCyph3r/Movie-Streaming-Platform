@@ -43,9 +43,9 @@
 })(jQuery);
 
 // JS CODEJavaScript
-const codes = document.querySelectorAll('.code')
+const codes = document.querySelectorAll('.code');
  
-codes[0].focus()
+codes[0].focus();
  
 codes.forEach((code, idx) => {
     code.addEventListener('keydown', (e) => {
@@ -55,9 +55,9 @@ codes.forEach((code, idx) => {
         } else if(e.key === 'Backspace') {
             setTimeout(() => codes[idx - 1].focus(), 10)
         }
-    })
-})
-console.log('working')
+    });
+});
+console.log('working');
 
 const search = document.querySelector(".search-box input"),
 images = document.querySelectorAll(".imageBox"),
@@ -89,4 +89,4 @@ search.addEventListener("keyup", () => {
     images.forEach(image => {
         image.style.display = "block";
     })
-})
+});

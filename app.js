@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static('public'));
 app.use(session({
-    secret: 'Our little secret',
+    secret: 'LDR has some of the best animations',
     resave: false,
     saveUninitialized: false,
 }));
@@ -50,7 +50,8 @@ Strategies.passport()
 app
     .route('/')
     .get((req, res) => {
-        res.send('<a href="/login"> Login </a>')
+        // res.send('<a href="/login"> Login </a>')
+        res.render('landing', {})
     })
     .post((req, res) => {
 
