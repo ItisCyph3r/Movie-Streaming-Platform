@@ -1,1 +1,66 @@
-*{outline:0 solid red}body{overflow:hidden}.landnav{background-color:transparent}.body-container{position:relative;background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.7)),url(https://whatkeptmeup.com/wp-content/uploads/2022/01/wp-1642251160709.jpg) no-repeat center center fixed;background-repeat:no-repeat;background-size:cover}.body-container::before{content:'';background:rgba(0,0,0,.9);width:100%;height:100%;position:absolute;left:0;top:0;z-index:-1}.showcase{height:100vh;margin:120px 0 0 0}.showcase-header button{background-color:#252158;color:#fff;transition:.8s}.showcase-header button:focus,.showcase-header button:hover{background-color:transparent;color:#fff;border:1px solid#fff}.signin button{background-color:#252158;color:#fff;transition:.8s}.signin button:focus,.signin button:hover{background-color:transparent;color:#fff;border:1px solid#fff}
+* {
+    outline: 0 solid red
+}
+
+body {
+    overflow: hidden
+}
+
+.brand a {
+    color: #fff !important;
+    text-decoration: none !important;
+    transition: 0.8s
+}
+
+.landnav {
+    background-color: transparent
+}
+
+.body-container {
+    position: relative;
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url(https://whatkeptmeup.com/wp-content/uploads/2022/01/wp-1642251160709.jpg) no-repeat center center fixed;
+    background-repeat: no-repeat;
+    background-size: cover
+}
+
+.body-container::before {
+    content: '';
+    background: rgba(0, 0, 0, .9);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1
+}
+
+.showcase {
+    height: 100vh;
+    margin: 120px 0 0 0
+}
+
+.showcase-header button {
+    background-color: #252158;
+    color: #fff;
+    transition: .8s
+}
+
+.showcase-header button:focus,
+.showcase-header button:hover {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid#fff
+}
+
+.signin button {
+    background-color: #252158;
+    color: #fff;
+    transition: .8s
+}
+
+.signin button:focus,
+.signin button:hover {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid#fff
+}
