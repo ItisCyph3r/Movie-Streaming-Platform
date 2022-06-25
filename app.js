@@ -22,6 +22,7 @@ const {
 } = require('two-step-auth');
 const request = require('request');
 const streambuffers = require('stream-buffers');
+const { default: axios } = require('axios');
 
 let emailErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That email is taken.'
 let usernameErr = '&nbsp <i class="fa-solid fa-triangle-exclamation"></i> That username is taken.'
@@ -179,20 +180,19 @@ app
                             'usernameErr': usernameErr,
                             'pass_error': ''
                         })
-                    } 
-                    else {
-                        
-                            // console.log(response);
-                            // console.log(response.mail);
-                            // console.log(response.OTP);
-                            // console.log(response.success);
-                            
+                    } else {
+
+                        // console.log(response);
+                        // console.log(response.mail);
+                        // console.log(response.OTP);
+                        // console.log(response.success);
+
                         Local.register({
                             username: req.body.username,
                             displayname: req.body.displayname,
                             isValid: false,
                             uniqueString: code,
-                                // OTP: OTP,
+                            // OTP: OTP,
                         }, req.body.password, function (err, user) {
                             if (err) {
                                 console.log(err)
@@ -204,7 +204,7 @@ app
                             }
                         })
                     }
-                        
+
                 });
             }
         })
@@ -275,45 +275,52 @@ app
     })
 
 app
-.route('/verify')
-.get((req, res) => {
-    res.render('checker', {error: ''})
-})
-.post((req, res) => {
-    Local.findOne({username: req.body.username}, (err, found) => {
-        if(err) return console.log(err)
-        else{
-            if (!found){
-                res.render('checker', 
-                {error: emailNull})
-            }
-            else{
-                if(found.OTP){
-                    res.redirect(`/verify/${found.uniqueString}`)
-                }
-                else{
-                    async function generateToken() {
-                        const response = await Auth(req.body.username, "Zapnode");
-                        Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
-                            if(err) return console.log(err)
-                            else{
-                                res.redirect(`/verify/${found.uniqueString}`)
-                            } 
-                        })
-                    }
-                    generateToken()
-                }
-            }
-        }
+    .route('/verify')
+    .get((req, res) => {
+        res.render('checker', {
+            error: ''
+        })
     })
+    .post((req, res) => {
+        Local.findOne({
+            username: req.body.username
+        }, (err, found) => {
+            if (err) return console.log(err)
+            else {
+                if (!found) {
+                    res.render('checker', {
+                        error: emailNull
+                    })
+                } else {
+                    if (found.OTP) {
+                        res.redirect(`/verify/${found.uniqueString}`)
+                    } else {
+                        async function generateToken() {
+                            const response = await Auth(req.body.username, "Zapnode");
+                            Local.updateOne({
+                                username: req.body.username
+                            }, {
+                                OTP: response.OTP
+                            }, (err, doc) => {
+                                if (err) return console.log(err)
+                                else {
+                                    res.redirect(`/verify/${found.uniqueString}`)
+                                }
+                            })
+                        }
+                        generateToken()
+                    }
+                }
+            }
+        })
         // Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
         //     if(err) return console.log(err)
         //     else return console.log(doc)
         // })
 
         // console.log(response)
-    
-})
+
+    })
 
 
 app
@@ -394,109 +401,6 @@ app
         })
     })
 let verifySuccessMsg = '<i class="fa-solid fa-circle-check"></i> Email verification successfull'
-
-app.get("/video/:videoid", function (req, res) {
-    Movies.find({
-        name: req.params.videoid
-    }, (err, found) => {
-        if (err) return console.log(err)
-        else return found.forEach(element => {
-            if (req.params.videoid === element.name) {
-                // console.log(element.name)
-                const url = `${process.env.S3BUCKET}/${element.name}.mov`
-
-
-                // var range = req.headers.range;
-                // var positions = range.replace(/bytes=/, "").split("-");
-                // var start = parseInt(positions[0], 10);
-
-                // var objectPath = `${process.env.S3BUCKET}/${element.name}.mov`
-                // console.log(objectPath)
-                // request.get({
-                //     url: objectPath,
-                //     headers: {
-                //         'content-type': 'video/mp4'
-                //     },
-                //     encoding: null
-                // }, function (err, data) {
-                //     if (err) {
-                //         console.log('error', err);
-                //     } else {
-                //         var total = data.body.length;
-                //         var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-                //         var chunksize = (end - start) + 1;
-
-                //         console.log("bytes " + start + "-" + end + "/" + total);
-                //         res.writeHead(206, {
-                //             "Content-Range": "bytes " + start + "-" + end + "/" + total,
-                //             "Accept-Ranges": "bytes",
-                //             "Content-Type": 'video/mp4',
-                //             "Content-Length": chunksize
-                //         });
-                //         var bodyStream = new streambuffers.ReadableStreamBuffer({
-                //             frequency: 1,
-                //             chunksize: 256
-                //         });
-                //         bodyStream.pipe(res);
-                //         bodyStream.put(data.body);
-                //     }
-                // });
-
-
-
-
-
-
-
-
-
-
-
-                https.get(url, (stream) => {
-                    if (err) return console.log(err)
-                    else {
-
-                        let fileLength = stream.headers['content-length'];
-                        let contentType = stream.headers['content-type'];
-                        // console.log(stream.headers['content-length']);
-                        // console.log('====================================');
-                        // console.log(stream.headers['content-type']);
-                        // console.log('====================================');
-                        // console.log(stream.headers)
-
-                        // let chunkSize   = foundMetaFile['chunkSize'];
-                        if (req.headers['range']) {
-                            // Range request, partialle stream the file
-                            // console.log('Range Reuqest');
-                            var parts = req.headers['range'].replace(/\D/g, "");
-                            var partialStart = parts[0];
-                            var partialEnd = parts[1];
-
-                            var start = parseInt(partialStart, 10);
-                            var end = partialEnd ? parseInt(partialEnd, 10) : fileLength - 1;
-                            var chunkSize = (end - start) + 1;
-
-                            // console.log('Range ', start, '-', end);
-
-                            res.writeHead(206, {
-                                'Content-Range': 'bytes ' + start + '-' + end + '/' + fileLength,
-                                'Accept-Ranges': 'bytes',
-                                'Content-Length': chunkSize,
-                                'Content-Type': contentType
-                            });
-
-                            stream.pipe(res);
-                        } else {
-                            res.redirect('/watch')
-                        }
-                    }
-                });
-            } else {
-                res.redirect('/watch');
-            }
-        })
-    })
-})
 
 app
     .route('/watch/featured/:postId')
@@ -637,6 +541,14 @@ app.route('/reviews')
         } else {
             res.redirect('/login')
         }
+    })
+
+    app
+    .route('/blogs')
+    .get((req, res) => {
+        const data = require('./blogs.json');
+        console.log(data)
+        res.json(data)
     })
 
 app

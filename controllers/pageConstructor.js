@@ -1,7 +1,6 @@
 const Movies = require('./movie');
-const {
-    Local
-} = require('./user')
+const {Local} = require('./user')
+require('dotenv').config()
 
 function randomArrayShuffle(array) {
     var currentIndex = array.length,
@@ -84,7 +83,8 @@ module.exports.searchDBStream = (db, req, res, next) => {
                                         userpicture: '<i class="uil uil-user-circle"></i>',
                                         title: element.name,
                                         description: element.description,
-                                        image: element.posterImage
+                                        image: element.posterImage,
+                                        url: `${process.env.S3BUCKET}/${element.name}.mp4`
                                     })
                                 }
                             });
@@ -111,7 +111,8 @@ module.exports.searchDBStream = (db, req, res, next) => {
                                         userpicture: `<img src= ${result.picture} alt="">`,
                                         title: element.name,
                                         description: element.description,
-                                        image: element.posterImage
+                                        image: element.posterImage,
+                                        url: `${process.env.S3BUCKET}/${element.name}.mp4`
                                     })
                                 }
                             });
