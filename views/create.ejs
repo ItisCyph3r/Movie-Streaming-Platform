@@ -1,0 +1,44 @@
+<%- include('header') %>
+<div class="userAuth">
+    <div class="row" style="height: 100vh">
+        <div class="login-form">
+            <form class="login100-form validate-form" action="/signup" method="post">
+                <a href="/">
+                    <img src="images/PhonePe_Images_zjha50 (2).png" style="height: 70px; width: 80px;"
+                        class="login-logo">
+                </a>
+                <span class="login100-form-title">
+                    Create an Account
+                </span>
+
+                <div class="text-center social-btn">
+                    <a href="/auth/google" class="btn google btn-block">
+                        <i class="fa fa-google"></i>
+                        Sign up with <b>Google &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                    </a>
+                    <a href="/auth/facebook" class="btn facebook btn-block">
+                        <i class="fa fa-facebook"></i>
+                        Sign up with <b>Facebook</b>
+                    </a>
+                </div>
+                <hr>
+                <div class="text-center social-btn">
+                    <a href="/signup" class="btn google btn-block">
+                        <i class="fa fa-email"></i>
+                        Sign up with <b>Email &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+                    </a>
+                </div>
+                
+                
+                <div class="specialops d-flex justify-content-around mt-3">
+                    <a class="text-center" href="/login">
+                        Log in instead
+                        <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<%- include('footer') %>

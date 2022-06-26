@@ -106,6 +106,15 @@ app
         })(req, res, next);
     })
 
+    app
+    .route('/create')
+    .get((req, res) => {
+        res.render('create')
+    })
+    .post((req, res, next) => {
+        
+    }) 
+
 app
     .route('/auth/google')
     .get(passport.authenticate('google', {
