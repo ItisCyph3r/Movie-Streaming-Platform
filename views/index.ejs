@@ -38,17 +38,19 @@
                             <div class="col-md-12">
                                 <div class="featured-carousel owl-carousel">
                                     <% for(var element= (movie.length-1); element>=0; element--){ %>
-                                    <div class="item">
-                                        <div class="work">
-                                            <div class="img d-flex align-items-end justify-content-center"
-                                                style="background-image: url('<%= movie[element].posterImage %>');">
-                                                <div class="text w-100">
-                                                    <!-- <span class="cat">Web Design</span> -->
-                                                    <h3><a href="/watch/featured/<%= movie[element].name %>"><%= movie[element].name %></a></h3>
+                                        <a href="/watch/featured/<%= movie[element].name %>">
+                                            <div class="item">
+                                                <div class="work">
+                                                    <div class="img d-flex align-items-end justify-content-center"
+                                                        style="background-image: url('<%= movie[element].posterImage %>');">
+                                                        <div class="text w-100">
+                                                            <!-- <span class="cat">Web Design</span> -->
+                                                            <h3><%= movie[element].name %></h3>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </a>
                                     <% } %>
                                 </div>
                             </div>
