@@ -10,8 +10,8 @@ const movieSchema = new mongoose.Schema({
     id: Number,
     name: String,
     posterImage: String,
-    actors: String,
-    description: String
+    description: String,
+    runTime: String
 })
 
 module.exports = mongoose.model('movie', movieSchema);

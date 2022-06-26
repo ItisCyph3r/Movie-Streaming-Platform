@@ -6,10 +6,10 @@
     <div class="top">
         <i class="uil uil-bars sidebar-toggle"></i>
 
-        <div class="search-box">
+        <!-- <div class="search-box">
             <i class="uil uil-search"></i>
             <input type="text" placeholder="Search here...">
-        </div>
+        </div> -->
 
         <div class="user-details">
             <div class="username d-none d-md-block">
@@ -44,8 +44,7 @@
                                                     <div class="img d-flex align-items-end justify-content-center"
                                                         style="background-image: url('<%= movie[element].posterImage %>');">
                                                         <div class="text w-100">
-                                                            <!-- <span class="cat">Web Design</span> -->
-                                                            <h3><%= movie[element].name %></h3>
+                                                            <h3 class="cardName"> <%= movie[element].name %> </h3>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -74,7 +73,7 @@
                             <a href="/watch/featured/<%= element.name %>">
                                 <img class="img-fluid" src=" <%= element.posterImage %>" alt="" >
                             </a>
-                            <div class="time">3:50</div>
+                            <div class="time"><%= element.runTime %></div>
                         </div>
                         <div class="video-card-body">
                             <div class="video-title">
