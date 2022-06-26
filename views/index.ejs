@@ -41,8 +41,7 @@
                                         <a href="/watch/featured/<%= movie[element].name %>">
                                             <div class="item">
                                                 <div class="work">
-                                                    <div class="img d-flex align-items-end justify-content-center"
-                                                        style="background-image: url('<%= movie[element].posterImage %>');">
+                                                    <div class="img d-flex align-items-end justify-content-center" style="background-image: url('<%= movie[element].posterImage %>');">
                                                         <div class="text w-100">
                                                             <h3 class="cardName"> <%= movie[element].name %> </h3>
                                                         </div>
@@ -71,7 +70,7 @@
                     <div class="col-lg-3 col-md-6 col-sm-12 mt-5 mt-md-0 imageBox" data-name="<%= element.name.toLowerCase() %>">
                         <div class="video-card-image">                            
                             <a href="/watch/featured/<%= element.name %>">
-                                <img class="img-fluid" src=" <%= element.posterImage %>" alt="" >
+                                <img class="img-fluid" src=" <%= element.posterImage %>" alt="" style="height: 380px;">
                             </a>
                             <div class="time"><%= element.runTime %></div>
                         </div>
