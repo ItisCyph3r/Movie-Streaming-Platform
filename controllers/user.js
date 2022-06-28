@@ -12,8 +12,8 @@ const localUserSchema = new mongoose.Schema({
     displayname: String,
     isValid: Boolean,
     uniqueString: String,
-    OTP: Number
-})
+    OTP: Number,
+}, {timestamps: true})
 
 const googleUserSchema = new mongoose.Schema({
     refreshToken: String,
@@ -21,13 +21,13 @@ const googleUserSchema = new mongoose.Schema({
     googleId: String,
     picture: String
 
-})
+}, {timestamps: true})
 
 const FacebookUserSchema = new mongoose.Schema({
     username: String,
     facebookId: String,
     picture: String
-})
+}, {timestamps: true})
 
 const InstagramUserSchema = new mongoose.Schema({
     username: String,

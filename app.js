@@ -190,26 +190,20 @@ app
                             'pass_error': ''
                         })
                     } else {
-
-                        // console.log(response);
-                        // console.log(response.mail);
-                        // console.log(response.OTP);
-                        // console.log(response.success);
-
                         Local.register({
                             username: req.body.username,
                             displayname: req.body.displayname,
                             isValid: false,
-                            uniqueString: code,
+                            uniqueString: uuid(),
                             // OTP: OTP,
                         }, req.body.password, function (err, user) {
                             if (err) {
                                 console.log(err)
                                 res.redirect('/signup')
                             } else {
-                                // console.log(code)
-                                res.redirect('/verify')
-                                // res.redirect(`/verify/${code}`)
+                                
+                                res.redirect('/login')
+                                
                             }
                         })
                     }
@@ -221,17 +215,6 @@ app
 
 
 
-// console.log(code)
-
-function verificationCode(count) {
-    var chars = 'acdefhiklmnoqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    var result = '';
-    for (var i = 0; i < count; i++) {
-        var x = Math.floor(Math.random() * chars.length);
-        result += chars[x];
-    }
-    return result;
-}
 
 function uuid() {
     const template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
@@ -244,172 +227,170 @@ function uuid() {
         return newValue.toString(16);
     });
 }
-// console.log(uuid())
-// let code = verificationCode(32)
-let code = uuid()
-
-app
-    .route('/generateToken/:uniqueString')
-    .get((req, res) => {
-
-        Local.findOne({
-            uniqueString: req.params.uniqueString
-        }, (err, doc) => {
-            if (doc.isValid === true) {
-                res.redirect(`/verify/${req.params.uniqueString}`)
-            } else {
-                async function OTPgenerator() {
-                    const response = await Auth(doc.username, "Zapnode");
-
-                    Local.updateOne({
-                        uniqueString: req.params.uniqueString
-                    }, {
-                        OTP: response.OTP
-                    }, {
-                        upsert: true
-                    }, (err, body) => {
-                        if (err) return console.log(err)
-                        else {
-                            // console.log(body)
-                            res.redirect(`/verify/${req.params.uniqueString}`)
-                        }
-                    })
-                }
-                OTPgenerator()
-            }
-
-        })
 
 
-    })
+// app
+//     .route('/generateToken/:uniqueString')
+//     .get((req, res) => {
 
-app
-    .route('/verify')
-    .get((req, res) => {
-        res.render('checker', {
-            error: ''
-        })
-    })
-    .post((req, res) => {
-        Local.findOne({
-            username: req.body.username
-        }, (err, found) => {
-            if (err) return console.log(err)
-            else {
-                if (!found) {
-                    res.render('checker', {
-                        error: emailNull
-                    })
-                } else {
-                    if (found.OTP) {
-                        res.redirect(`/verify/${found.uniqueString}`)
-                    } else {
-                        async function generateToken() {
-                            const response = await Auth(req.body.username, "Zapnode");
-                            Local.updateOne({
-                                username: req.body.username
-                            }, {
-                                OTP: response.OTP
-                            }, (err, doc) => {
-                                if (err) return console.log(err)
-                                else {
-                                    res.redirect(`/verify/${found.uniqueString}`)
-                                }
-                            })
-                        }
-                        generateToken()
-                    }
-                }
-            }
-        })
-        // Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
-        //     if(err) return console.log(err)
-        //     else return console.log(doc)
-        // })
+//         Local.findOne({
+//             uniqueString: req.params.uniqueString
+//         }, (err, doc) => {
+//             if (doc.isValid === true) {
+//                 res.redirect(`/verify/${req.params.uniqueString}`)
+//             } else {
+//                 async function OTPgenerator() {
+//                     const response = await Auth(doc.username, "Zapnode");
 
-        // console.log(response)
+//                     Local.updateOne({
+//                         uniqueString: req.params.uniqueString
+//                     }, {
+//                         OTP: response.OTP
+//                     }, {
+//                         upsert: true
+//                     }, (err, body) => {
+//                         if (err) return console.log(err)
+//                         else {
+//                             // console.log(body)
+//                             res.redirect(`/verify/${req.params.uniqueString}`)
+//                         }
+//                     })
+//                 }
+//                 OTPgenerator()
+//             }
 
-    })
+//         })
 
 
-app
-    .route('/verify/:uniqueString')
-    .get((req, res) => {
-        Local.findOne({
-            uniqueString: req.params.uniqueString
-        }, (err, doc) => {
-            res.render('verify', {
-                verify: '',
-                url: doc.uniqueString,
-                verifySuccess: '',
-                verifyError: '',
-                verifyTimeout: ''
-            })
-        })
+//     })
 
-    })
-    .post((req, res) => {
-        Local.findOne({
-            uniqueString: req.params.uniqueString
-        }, (err, doc) => {
-            if (err) return console.log(err)
-            if (doc) {
+// app
+//     .route('/verify')
+//     .get((req, res) => {
+//         res.render('checker', {
+//             error: ''
+//         })
+//     })
+//     .post((req, res) => {
+//         Local.findOne({
+//             username: req.body.username
+//         }, (err, found) => {
+//             if (err) return console.log(err)
+//             else {
+//                 if (!found) {
+//                     res.render('checker', {
+//                         error: emailNull
+//                     })
+//                 } else {
+//                     if (found.OTP) {
+//                         res.redirect(`/verify/${found.uniqueString}`)
+//                     } else {
+//                         async function generateToken() {
+//                             const response = await Auth(req.body.username, "Zapnode");
+//                             Local.updateOne({
+//                                 username: req.body.username
+//                             }, {
+//                                 OTP: response.OTP
+//                             }, (err, doc) => {
+//                                 if (err) return console.log(err)
+//                                 else {
+//                                     res.redirect(`/verify/${found.uniqueString}`)
+//                                 }
+//                             })
+//                         }
+//                         generateToken()
+//                     }
+//                 }
+//             }
+//         })
+//         // Local.updateOne({username: req.body.username}, {OTP: response.OTP}, (err, doc) => {
+//         //     if(err) return console.log(err)
+//         //     else return console.log(doc)
+//         // })
 
-                if (doc.isValid === true) {
+//         // console.log(response)
 
-                    res.render('verify', {
-                        verify: verifyAcct,
-                        url: doc.uniqueString,
-                        verifySuccess: '',
-                        verifyError: '',
-                        verifyTimeout: ''
-                    })
-                } else {
+//     })
 
-                    if (doc.OTP === parseInt(req.body.one.join(''))) {
-                        Local.updateOne({
-                            uniqueString: req.params.uniqueString
-                        }, {
-                            isValid: true
-                        }, {
-                            upsert: true
-                        }, (err, body) => {
-                            if (err) return console.log(err)
-                            else {
 
-                                res.render('verify', {
-                                    verify: '',
-                                    url: doc.uniqueString,
-                                    verifySuccess: verifySuccessMsg,
-                                    verifyError: '',
-                                    verifyTimeout: ''
-                                })
-                            }
-                        });
-                    } else {
+// app
+//     .route('/verify/:uniqueString')
+//     .get((req, res) => {
+//         Local.findOne({
+//             uniqueString: req.params.uniqueString
+//         }, (err, doc) => {
+//             res.render('verify', {
+//                 verify: '',
+//                 url: doc.uniqueString,
+//                 verifySuccess: '',
+//                 verifyError: '',
+//                 verifyTimeout: ''
+//             })
+//         })
 
-                        res.render('verify', {
-                            verify: '',
-                            url: doc.uniqueString,
-                            verifySuccess: '',
-                            verifyError: verifyErrorMsg,
-                            verifyTimeout: ''
-                        })
-                    }
-                }
-            } else {
+//     })
+//     .post((req, res) => {
+//         Local.findOne({
+//             uniqueString: req.params.uniqueString
+//         }, (err, doc) => {
+//             if (err) return console.log(err)
+//             if (doc) {
 
-                res.render('verify', {
-                    verify: '',
-                    url: doc.uniqueString,
-                    verifySuccess: '',
-                    verifyError: '',
-                    verifyTimeout: timeOutMsg
-                })
-            }
-        })
-    })
-let verifySuccessMsg = '<i class="fa-solid fa-circle-check"></i> Email verification successfull'
+//                 if (doc.isValid === true) {
+
+//                     res.render('verify', {
+//                         verify: verifyAcct,
+//                         url: doc.uniqueString,
+//                         verifySuccess: '',
+//                         verifyError: '',
+//                         verifyTimeout: ''
+//                     })
+//                 } else {
+
+//                     if (doc.OTP === parseInt(req.body.one.join(''))) {
+//                         Local.updateOne({
+//                             uniqueString: req.params.uniqueString
+//                         }, {
+//                             isValid: true
+//                         }, {
+//                             upsert: true
+//                         }, (err, body) => {
+//                             if (err) return console.log(err)
+//                             else {
+
+//                                 res.render('verify', {
+//                                     verify: '',
+//                                     url: doc.uniqueString,
+//                                     verifySuccess: verifySuccessMsg,
+//                                     verifyError: '',
+//                                     verifyTimeout: ''
+//                                 })
+//                             }
+//                         });
+//                     } else {
+
+//                         res.render('verify', {
+//                             verify: '',
+//                             url: doc.uniqueString,
+//                             verifySuccess: '',
+//                             verifyError: verifyErrorMsg,
+//                             verifyTimeout: ''
+//                         })
+//                     }
+//                 }
+//             } else {
+
+//                 res.render('verify', {
+//                     verify: '',
+//                     url: doc.uniqueString,
+//                     verifySuccess: '',
+//                     verifyError: '',
+//                     verifyTimeout: timeOutMsg
+//                 })
+//             }
+//         })
+//     })
+// let verifySuccessMsg = '<i class="fa-solid fa-circle-check"></i> Email verification successfull'
 
 app
     .route('/watch/featured/:postId')
