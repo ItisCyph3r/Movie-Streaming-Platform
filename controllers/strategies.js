@@ -17,7 +17,7 @@ module.exports.passport = () => {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             // callbackURL: "http://localhost:3000/auth/google/watch",
-            callbackURL: "https://zapnodetv.herokuapp.com/auth/google/watch",
+            callbackURL: "https://zapnode-tv.onrender.com/auth/google/watch",
             userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         },
         function (accessToken, refreshToken, profile, cb) {
@@ -34,7 +34,7 @@ module.exports.passport = () => {
     passport.use(new FacebookStrategy({
             clientID: process.env.FACEBOOK_APP_ID,
             clientSecret: process.env.FACEBOOK_APP_SECRET,
-            callbackURL: "https://zapnodetv.herokuapp.com/auth/facebook/watch",
+            callbackURL: "https://zapnode-tv.onrender.com/auth/facebook/watch",
         },
         function (accessToken, refreshToken, profile, cb) {
             const picture = `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
